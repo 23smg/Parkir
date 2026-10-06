@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0e1c36">
-<title>Konsol Parkir Event</title>
+<meta name="theme-color" id="themeColor" content="#0e1c36">
+<title>Temporary Parking Membership</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--ink:#0e1c36;--blue:#1a4fd6;--yellow:#ffc21a;--paper:#f3f4f7;--line:#dfe3ea;--mute:#5b6577;--ok:#12805c;--err:#c0362c;--warn:#b45309}
+:root{--accent:#ffc21a;--side:#0e1c36;--ink:#0e1c36;--blue:#1a4fd6;--yellow:#ffc21a;--paper:#f3f4f7;--line:#dfe3ea;--mute:#5b6577;--ok:#12805c;--err:#c0362c;--warn:#b45309}
 *{box-sizing:border-box;margin:0}
 html{-webkit-text-size-adjust:100%}
 body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
@@ -50,14 +50,14 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 
 /* Kerangka */
 .app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
-.side{background:var(--ink);color:#c6d0e4;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:18px 12px;z-index:65}
+.side{background:var(--side);color:#c6d0e4;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:18px 12px;z-index:65}
 .brand{display:flex;gap:12px;align-items:center;padding:4px 10px 20px;color:#fff}
 .brand b{display:block;font-size:16px;font-weight:800;line-height:1.1}.brand small{font-size:12px;color:#8fa0bf}
 .navs{display:flex;flex-direction:column;gap:2px;flex:1;overflow:auto}
 .nav{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:10px;border:0;background:none;color:inherit;font-weight:600;font-size:14px;text-align:left}
 .nav:hover{background:rgba(255,255,255,.06)}
-.nav.on{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 3px 0 0 var(--yellow)}
-.nav .cnt{margin-left:auto;background:var(--yellow);color:var(--ink);font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px}
+.nav.on{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 3px 0 0 var(--accent)}
+.nav .cnt{margin-left:auto;background:var(--accent);color:var(--ink);font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px}
 .me{border-top:1px solid rgba(255,255,255,.12);padding:14px 10px 4px;display:flex;align-items:center;gap:10px}
 .me div{flex:1;min-width:0}.me b{display:block;color:#fff;font-size:13px}.me small{font-size:12px;color:#8fa0bf}
 .me button{border:0;background:rgba(255,255,255,.08);color:#fff;width:38px;height:38px;border-radius:10px;display:grid;place-items:center}
@@ -143,6 +143,18 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 .pgfoot a,.credit-l a{color:inherit;text-decoration:none}
 .pgfoot{padding:8px 28px 26px;font-size:11px;line-height:1.5;color:#9aa3b2}
 @media (max-width:900px){.pgfoot{padding:0 16px 26px}}
+.chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#e8eeff;color:var(--blue);white-space:nowrap}
+body.op{--side:#0a3b3a;--accent:#3fd9b0}
+body.op .nav .cnt{color:#04201f}
+body.op .chip{background:#dcf5ee;color:#0b6b57}
+body.op .sign{background:#0f8f74;box-shadow:inset 0 0 0 3px #0f8f74,inset 0 0 0 5.5px #fff}
+body.op .top{border-bottom:3px solid var(--accent)}
+body.op .btn.sm{min-height:40px}
+.tbl tr.new{background:#fffbea}.tbl tr.new td:first-child{box-shadow:inset 4px 0 0 var(--accent)}
+.pill-new{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--accent);color:#0e1c36;font-size:10px;font-weight:800;vertical-align:middle}
+.banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#fff8e1;border:1px solid #f0d58f;border-radius:12px;padding:12px 16px;font-weight:600}
+.toast[data-act]{cursor:pointer}
+@media (max-width:760px){.tbl tr.new{border-color:var(--accent);border-width:2px}}
 @media (max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.gate{grid-template-columns:1fr}.gate-s{border-left:0;border-top:1px solid rgba(255,255,255,.16);padding:18px 0 0}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
@@ -195,7 +207,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 <div class="login" id="login">
   <form class="login-card" id="loginForm" autocomplete="off">
     <div class="sign" aria-hidden="true">P</div>
-    <h1>Konsol Parkir Event</h1>
+    <h1>Temporary Parking Membership</h1>
     <p>Masukkan PIN untuk melanjutkan.</p>
     <input class="pin" type="password" id="pinInput" inputmode="numeric" maxlength="10" placeholder="••••••" autocomplete="off" aria-label="PIN akses">
     <div class="login-err" id="loginErr" role="alert" hidden></div>
@@ -207,7 +219,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 
 <div class="app" id="app" hidden>
   <aside class="side" id="side">
-    <div class="brand"><div class="sign" aria-hidden="true">P</div><div><b>Parkir Event</b><small>Konsol operasional</small></div></div>
+    <div class="brand"><div class="sign" aria-hidden="true">P</div><div><b>Temporary Parking</b><small id="brandSub">Membership</small></div></div>
     <nav class="navs" id="nav" aria-label="Menu utama"></nav>
     <div class="me">
       <div><b id="meName">-</b><small id="meRole">-</small></div>
@@ -219,7 +231,8 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
     <header class="top">
       <button class="btn ghost sm burger" data-act="menu" aria-label="Buka menu" style="width:40px;padding:0"><svg class="ic"><use href="#i-menu"/></svg></button>
       <h1 id="pageTitle">Ringkasan</h1>
-      <span class="upd" id="updText"></span>
+      <span class="chip" id="roleChip"></span><span class="upd" id="updText"></span>
+      <button class="btn ghost sm" id="btnNotif" data-act="notif" hidden></button>
       <button class="btn ghost sm" id="btnRefresh" data-act="refresh"><svg class="ic"><use href="#i-refresh"/></svg><span>Muat ulang</span></button>
     </header>
 
@@ -257,6 +270,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 
       <!-- PERMOHONAN -->
       <section class="stack" id="v-requests" hidden>
+        <div class="banner" id="newBanner" hidden><span id="newBannerTxt"></span><button class="btn sm" data-act="seenAll">Tandai sudah dilihat</button></div>
         <div class="panel">
           <div class="tabs" id="reqTabs" role="tablist"></div>
           <div class="filters">
@@ -397,13 +411,13 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 <script>
 (function () {
   var S = { pin: '', role: '', user: '', reqs: [], events: [], view: '', q: '', st: '', df: 'all', page: 1, per: 10,
-            audit: null, auditErr: '', auditQ: '', rep: '30', charts: {}, updated: null, checkins: {} };
+            audit: null, auditErr: '', auditQ: '', rep: '30', charts: {}, updated: null, checkins: {}, seen: {}, newIds: {} };
   var $ = function (id) { return document.getElementById(id); };
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   var NAV = {
     management: [['overview', 'Ringkasan', 'home'], ['requests', 'Permohonan', 'list'], ['check', 'Cek Kendaraan', 'search'], ['walkin', 'Daftar di Lokasi', 'plus'],
                  ['events', 'Event', 'cal'], ['reports', 'Laporan', 'chart'], ['audit', 'Log Aktivitas', 'clock'], ['settings', 'Pengaturan', 'sliders']],
-    operator: [['check', 'Cek Kendaraan', 'search'], ['walkin', 'Daftar di Lokasi', 'plus'], ['requests', 'Daftar Parkir', 'list'], ['settings', 'Akun', 'user']]
+    operator: [['requests', 'Permintaan Masuk', 'list'], ['check', 'Cek Kendaraan', 'search'], ['settings', 'Akun', 'user']]
   };
   var AKSI = { STATUS_APPROVED: ['Menyetujui', 'a'], STATUS_REJECTED: ['Menolak', 'r'], STATUS_COMPLETED: ['Konfirmasi WA', 'c'],
                TAMBAH_EVENT: ['Tambah event', 'n'], EDIT_EVENT: ['Edit event', 'n'], HAPUS_EVENT: ['Hapus event', 'r'], UBAH_PIN: ['Ubah PIN', 'p'], LIHAT_STNK: ['Lihat STNK', 'n'], CABUT_AKSES: ['Cabut akses', 'r'], WALKIN: ['Walk-in tunai', 'c'] };
@@ -424,9 +438,10 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   function findEv(id) { return S.events.filter(function (e) { return e.id === id; })[0]; }
 
   var toastT;
-  function toast(msg, type) {
+  function toast(msg, type, ms, act) {
     var t = $('toast'); t.textContent = msg; t.className = 'toast ' + (type || ''); t.hidden = false;
-    clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 3600);
+    if (act) t.dataset.act = act; else delete t.dataset.act;
+    clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, ms || 3600);
   }
   function run(fn, args, ok, bad) {
     var failFn = bad || function (e) { toast((e && e.message) || 'Koneksi ke server gagal.', 'err'); };
@@ -475,9 +490,14 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
       $('meRole').textContent = S.role === 'management' ? 'Management' : 'Operator lapangan';
       $('stUser').textContent = $('meName').textContent; $('stRole').textContent = $('meRole').textContent;
       $('pinPanel').hidden = S.role !== 'management';
-      S.df = S.role === 'management' ? 'all' : 'active'; $('fDate').value = S.df;
-      applyData(res);
-      go(S.role === 'management' ? 'overview' : 'check');
+      var op = S.role === 'operator';
+      document.body.classList.toggle('op', op);
+      $('roleChip').textContent = op ? 'Operator' : 'Management';
+      $('brandSub').textContent = op ? 'Membership · Operator' : 'Membership · Admin';
+      $('themeColor').setAttribute('content', op ? '#0a3b3a' : '#0e1c36');
+      S.df = 'all'; S.st = op ? 'Approved' : ''; $('fDate').value = 'all';
+      applyData(res); S.seen = watchedIds(); updateNotifBtn();
+      go(op ? 'requests' : 'overview');
       startTimers();
     }, function (err) {
       done(); loginErr('Gagal masuk: ' + ((err && err.message) || 'koneksi ke server bermasalah.')); pingServer();
@@ -494,22 +514,59 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   function startTimers() {
     ['click', 'keydown', 'touchstart'].forEach(function (ev) { document.addEventListener(ev, bumpIdle, { passive: true }); });
     bumpIdle();
-    setInterval(function () { if (document.visibilityState === 'visible' && !document.querySelector('.swal2-container')) refreshData(true); }, 90000);
+    setInterval(function () { if (!document.querySelector('.swal2-container')) refreshData(true); }, S.role === 'operator' ? 30000 : 60000);
   }
 
   function refreshData(silent) {
     var b = $('btnRefresh'); b.classList.add('spin');
     run('getAdminData', [S.pin], function (res) {
       b.classList.remove('spin');
-      if (res && res.authorized) { applyData(res); renderAll(); if (!silent) toast('Data diperbarui', 'ok'); }
+      if (res && res.authorized) { applyData(res); detectNew(); renderAll(); if (!silent) toast('Data diperbarui', 'ok'); }
       else if (silent) $('updText').textContent = 'Gagal memperbarui';
       else toast((res && res.message) || 'Sesi berakhir. Muat ulang halaman.', 'err');
     }, function (e) { b.classList.remove('spin'); if (silent) $('updText').textContent = 'Gagal memperbarui (offline?)'; else toast((e && e.message) || 'Gagal memuat data.', 'err'); });
   }
 
+  /* ---------- Notifikasi permintaan baru ---------- */
+  // Operator dipantau untuk permintaan yang baru DISETUJUI; management untuk permohonan baru yang menunggu verifikasi.
+  function watchStatus() { return S.role === 'management' ? 'Pending Verification' : 'Approved'; }
+  function watchedIds() { var w = watchStatus(), o = {}; S.reqs.forEach(function (r) { if (r.status === w) o[r.id] = true; }); return o; }
+  var AC;
+  function beep() {
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === 'suspended') AC.resume();
+      var o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime;
+      o.type = 'sine'; o.frequency.value = 880; g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.25, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+      o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + 0.65);
+    } catch (e) {}
+  }
+  function pushNotif(msg) {
+    if (!('Notification' in window) || Notification.permission !== 'granted' || document.visibilityState === 'visible') return;
+    try { new Notification('Temporary Parking Membership', { body: msg, tag: 'ptm-new', renotify: true }); } catch (e) {}
+  }
+  function updateNotifBtn() {
+    var b = $('btnNotif');
+    if (!('Notification' in window)) { b.hidden = true; return; }
+    var p = Notification.permission; b.hidden = false; b.disabled = p !== 'default';
+    b.textContent = p === 'granted' ? 'Notifikasi aktif' : p === 'denied' ? 'Notifikasi diblokir' : 'Aktifkan notifikasi';
+  }
+  function detectNew() {
+    var cur = watchedIds(), fresh = [];
+    Object.keys(cur).forEach(function (id) { if (!S.seen[id]) { fresh.push(id); S.newIds[id] = true; } });
+    S.seen = cur;
+    if (!fresh.length) return;
+    var mgmt = S.role === 'management', it = find(fresh[0]), msg;
+    if (fresh.length === 1 && it) msg = (mgmt ? 'Permohonan baru: ' : 'Disetujui, siap dikonfirmasi: ') + it.nopol + ' · ' + it.nama;
+    else msg = fresh.length + (mgmt ? ' permohonan baru menunggu verifikasi' : ' permintaan baru telah disetujui');
+    beep(); toast(msg, 'ok', 9000, 'goNew'); pushNotif(msg);
+  }
+
   /* ---------- Navigasi ---------- */
   function buildNav() {
-    var o = stats(), h = '';
+    var o = stats(), h = '', nW = S.role === 'management' ? o.p : o.a;
+    document.title = (nW ? '(' + nW + ') ' : '') + 'Temporary Parking Membership';
     NAV[S.role].forEach(function (n) {
       var c = n[0] === 'requests' ? (S.role === 'management' ? o.p : o.a) : 0;
       h += '<button type="button" class="nav' + (S.view === n[0] ? ' on' : '') + '" data-act="nav" data-view="' + n[0] + '">' + icon(n[2]) + '<span>' + n[1] + '</span>' + (c ? '<span class="cnt">' + c + '</span>' : '') + '</button>';
@@ -583,7 +640,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   function tabsDef() {
     return S.role === 'management'
       ? [['', 'Semua'], ['Pending Verification', 'Perlu verifikasi'], ['Approved', 'Disetujui'], ['Completed', 'Selesai'], ['Rejected', 'Ditolak']]
-      : [['', 'Semua'], ['Approved', 'Belum dikonfirmasi'], ['Completed', 'Sudah dikonfirmasi']];
+      : [['', 'Semua'], ['Approved', 'Perlu dikonfirmasi'], ['Completed', 'Sudah dikonfirmasi']];
   }
   function dateOk(it, type) {
     if (type === 'all') return true;
@@ -614,6 +671,9 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   }
   function renderRequests() {
     $('fDate').value = S.df;
+    var nNew = Object.keys(S.newIds).length;
+    $('newBanner').hidden = !nNew;
+    $('newBannerTxt').textContent = nNew + (S.role === 'management' ? ' permohonan baru menunggu verifikasi' : ' permintaan baru disetujui dan siap dikonfirmasi');
     var tabs = tabsDef().map(function (t) {
       var n = t[0] ? S.reqs.filter(function (r) { return r.status === t[0]; }).length : S.reqs.length;
       return '<button type="button" class="tab' + (S.st === t[0] ? ' on' : '') + '" role="tab" data-act="tab" data-st="' + esc(t[0]) + '">' + t[1] + '<i>' + n + '</i></button>';
@@ -624,8 +684,8 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
     if (S.page > pages) S.page = pages; if (S.page < 1) S.page = 1;
     var s = (S.page - 1) * S.per, e = Math.min(s + S.per, total), h = '';
     list.slice(s, e).forEach(function (it) {
-      h += '<tr data-act="detail" data-id="' + esc(it.id) + '">' +
-        '<td data-l="Pemohon"><div><div class="nm">' + esc(it.nama) + '</div><div class="sub">' + esc(it.id) + '</div></div></td>' +
+      h += '<tr' + (S.newIds[it.id] ? ' class="new"' : '') + ' data-act="detail" data-id="' + esc(it.id) + '">' +
+        '<td data-l="Pemohon"><div><div class="nm">' + esc(it.nama) + (S.newIds[it.id] ? '<span class="pill-new">BARU</span>' : '') + '</div><div class="sub">' + esc(it.id) + '</div></div></td>' +
         '<td data-l="Kendaraan"><div><span class="plt">' + esc(it.nopol) + '</span><div class="sub" style="margin-top:4px">' + esc(it.jenis) + '</div></div></td>' +
         '<td data-l="Event"><div><div>' + esc(it.event) + '</div><div class="sub">' + fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + '</div></div></td>' +
         '<td data-l="Total"><b>' + rp(it.totalBayar) + '</b></td>' +
@@ -913,6 +973,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   /* ---------- Detail ---------- */
   function openDrawer(id) {
     var it = find(id); if (!it) return;
+    if (S.newIds[id]) { delete S.newIds[id]; if (S.view === 'requests') renderRequests(); }
     $('drId').textContent = it.id; $('drTs').textContent = 'Diajukan ' + (it.timestamp || '-');
     var rows = [['Status', badge(it.status)], ['Pemohon', esc(it.nama)], ['WhatsApp', esc(it.wa)], ['Nomor polisi', '<span class="plt">' + esc(it.nopol) + '</span>'],
       ['Jenis', esc(it.jenis)], ['Event', esc(it.event)], ['Periode', fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + ' (' + it.totalHari + ' hari)'],
@@ -924,7 +985,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 
   /* ---------- Status ---------- */
   function applyStatus(it, status, note, announce, okMsg) {
-    var ps = it.status, pn = it.catatan;
+    var ps = it.status, pn = it.catatan; delete S.newIds[it.id];
     it.status = status; if (note) it.catatan = note; renderAll();
     function back(msg) { it.status = ps; it.catatan = pn; renderAll(); toast(msg, 'err'); }
     run('updateStatus', [it.id, status, S.pin, note || ''], function (res) {
@@ -944,7 +1005,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   function operatorWA(id) {
     var it = find(id); if (!it) return;
     var wa = String(it.wa || '').replace(/\D/g, ''); if (wa.indexOf('0') === 0) wa = '62' + wa.slice(1);
-    var text = 'Halo ' + it.nama + ',\n\nKonfirmasi akses parkir berlangganan event *' + it.event + '*:\n• Nama: ' + it.nama + '\n• No. Polisi: *' + it.nopol +
+    var text = 'Halo ' + it.nama + ',\n\nKonfirmasi *Temporary Parking Membership* untuk event *' + it.event + '*:\n• Nama: ' + it.nama + '\n• No. Polisi: *' + it.nopol +
       '*\n\nData Anda telah aktif di sistem. Tunjukkan pesan WhatsApp ini kepada petugas lapangan. Terima kasih!';
     window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(text), '_blank');   // sinkron dengan klik agar tidak diblokir browser
     closeAll(); applyStatus(it, 'Completed', 'Konfirmasi dikirim via operator WA', false);
@@ -1048,6 +1109,9 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
       case 'approve': changeStatus(id, 'Approved'); break;
       case 'reject': changeStatus(id, 'Rejected'); break;
       case 'wa': operatorWA(id); break;
+      case 'notif': if ('Notification' in window) Notification.requestPermission().then(updateNotifBtn); break;
+      case 'seenAll': S.newIds = {}; renderRequests(); break;
+      case 'goNew': go('requests', { st: watchStatus() }); break;
       case 'revoke': revoke(id); break;
       case 'checkin': checkin(id); break;
       case 'walkSubmit': walkSubmit(); break;
