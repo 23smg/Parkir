@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1c36">
+<title>Form Request Parkir Event</title>
+<script src="assets/config.js"></script>
+<script src="assets/api.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0e1c36;--blue:#1a4fd6;--yellow:#ffc21a;--paper:#f3f4f7;--line:#dfe3ea;--mute:#5b6577;--ok:#12805c;--err:#c0362c}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--paper);color:var(--ink);
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+
+/* Header */
+.hero{background:var(--ink);color:#fff;padding:calc(22px + env(safe-area-inset-top,0px)) 20px 76px}
+.hero-in{max-width:520px;margin:0 auto;display:flex;gap:14px;align-items:center}
+.sign{flex:none;width:54px;height:54px;border-radius:13px;background:var(--blue);display:grid;place-items:center;
+  font-weight:800;font-size:31px;color:#fff;box-shadow:inset 0 0 0 3px var(--blue),inset 0 0 0 6px #fff}
+.hero h1{font-size:20px;line-height:1.25;font-weight:800}
+.hero p{font-size:13px;color:#b8c3d9;margin-top:3px}
+main{max-width:520px;margin:-52px auto 0;padding:0 16px}
+
+/* Kartu & field */
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--line)}
+.card h2{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800;margin-bottom:16px}
+.step{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;display:grid;place-items:center}
+.field{margin-bottom:16px}.field:last-child{margin-bottom:0}
+.l{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+.hint{font-size:12px;color:var(--mute);margin-top:6px;line-height:1.4}
+.in{width:100%;min-height:50px;padding:12px 14px;font:inherit;font-size:16px;color:var(--ink);background:#fff;
+  border:1.5px solid var(--line);border-radius:12px;outline:none;-webkit-appearance:none;appearance:none}
+.in::placeholder{color:#9aa3b2}
+.in:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,79,214,.16)}
+select.in{padding-right:40px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' fill='none' stroke='%235b6577' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center}
+input[type=date].in{display:block;min-width:0;text-align:left}
+input[type=date].in::-webkit-date-and-time-value{text-align:left}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{display:none;font-size:12px;font-weight:600;color:var(--err);margin-top:6px}
+.has-err .err{display:block}
+.has-err .in,.has-err .tile-b,.has-err .drop{border-color:var(--err)}
+.has-err .plate{outline:3px solid var(--err);outline-offset:2px}
+
+/* Pilihan kendaraan */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{position:relative;display:block}
+.tile input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.tile-b{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;border:1.5px solid var(--line);border-radius:14px;background:#fff;text-align:center}
+.tile-b svg{width:44px;height:30px;fill:none;stroke:var(--mute);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tile-b b{font-size:15px}.tile-b small{font-size:12px;color:var(--mute)}
+.tile input:checked+.tile-b{border-color:var(--blue);background:#eef3ff;box-shadow:0 0 0 3px rgba(26,79,214,.14)}
+.tile input:checked+.tile-b svg{stroke:var(--blue)}
+.tile input:focus-visible+.tile-b{outline:3px solid var(--blue);outline-offset:2px}
+
+/* Input pelat nomor */
+.plate{width:100%;min-height:64px;text-align:center;background:#14161a;color:#fff;border:0;border-radius:10px;outline:none;
+  font:800 28px/1 'Plus Jakarta Sans',system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  box-shadow:inset 0 0 0 3px #14161a,inset 0 0 0 5px #fff;-webkit-appearance:none;appearance:none}
+.plate::placeholder{color:#6b7385;font-weight:700}
+.plate:focus{box-shadow:inset 0 0 0 3px #14161a,inset 0 0 0 5px var(--yellow)}
+
+/* Chip durasi */
+.chips{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.chip{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:13px;font-weight:700}
+.chip:active{background:var(--paper)}
+
+/* Tiket ringkasan */
+.ticket{background:#fff;border-radius:18px;border:1px solid var(--line);margin-bottom:14px;overflow:hidden}
+.t-top{padding:16px 18px 14px}
+.t-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:4px 0}
+.t-row span:first-child{color:var(--mute)}.t-row b{font-weight:700;text-align:right}
+.t-cut{position:relative;margin:0 14px;border-top:2px dashed var(--line)}
+.t-cut::before,.t-cut::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--paper);border:1px solid var(--line)}
+.t-cut::before{left:-24px}.t-cut::after{right:-24px}
+.t-bot{padding:14px 18px 18px;display:flex;justify-content:space-between;align-items:baseline}
+.t-bot span{font-size:13px;font-weight:700;color:var(--mute)}
+.t-bot strong{font-size:26px;font-weight:800;letter-spacing:-.01em}
+
+/* Rekening */
+.bank{background:var(--ink);color:#fff;border-radius:14px;padding:16px;margin-bottom:14px}
+.bank small{display:block;font-size:12px;color:#b8c3d9}
+.bank .no{font-size:22px;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums;margin:4px 0}
+.bank-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.copy{min-height:44px;padding:0 16px;border-radius:10px;border:0;background:var(--yellow);color:var(--ink);font-weight:800;font-size:14px}
+
+/* Unggah bukti */
+.drop{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 12px;background:#fafbfd;
+  border:2px dashed #c4cbd8;border-radius:14px;text-align:center}
+.drop svg{width:34px;height:34px;fill:none;stroke:var(--blue);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-bottom:4px}
+.drop b{font-size:15px}.drop small{font-size:12px;color:var(--mute)}
+.preview{display:flex;gap:12px;align-items:center;padding:10px;border:1.5px solid var(--line);border-radius:14px}
+.preview img{width:72px;height:72px;object-fit:cover;border-radius:10px;background:var(--paper)}
+.preview b{display:block;font-size:14px;word-break:break-all}
+.preview small{display:block;font-size:12px;color:var(--mute);margin:2px 0 6px}
+.link{border:0;background:none;color:var(--blue);font-weight:700;font-size:14px;padding:6px 0;min-height:36px}
+
+/* Bar bawah */
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));z-index:20}
+.bar-in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.bar-in>div{flex:1;min-width:0}
+.bar small{display:block;font-size:12px;color:var(--mute);font-weight:600}
+.bar strong{font-size:20px;font-weight:800;white-space:nowrap}
+.btn{flex:none;min-height:52px;padding:0 24px;border:0;border-radius:14px;background:var(--yellow);color:var(--ink);font-size:16px;font-weight:800;
+  display:inline-flex;align-items:center;gap:10px}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.7;cursor:progress}
+.spin{width:18px;height:18px;border:3px solid rgba(14,28,54,.25);border-top-color:var(--ink);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;left:16px;right:16px;bottom:calc(96px + env(safe-area-inset-bottom,0px));max-width:488px;margin:0 auto;z-index:30;
+  padding:13px 16px;border-radius:12px;font-size:14px;font-weight:600;color:#fff;background:var(--ink)}
+.toast.err{background:var(--err)}.toast.ok{background:var(--ok)}
+
+/* Layar sukses */
+.done{text-align:center;padding:28px 20px}
+.done .ck{width:64px;height:64px;border-radius:50%;background:#e4f5ee;color:var(--ok);display:grid;place-items:center;margin:0 auto 14px}
+.done .ck svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.done h2{justify-content:center;font-size:20px;margin-bottom:6px}
+.done p{font-size:14px;color:var(--mute);line-height:1.5}
+.rid{margin:16px 0;padding:14px;border:1.5px dashed #c4cbd8;border-radius:12px}
+.rid small{display:block;font-size:12px;color:var(--mute)}
+.rid b{font-size:18px;letter-spacing:.03em;word-break:break-all}
+.btn-line{width:100%;min-height:50px;margin-top:14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font-weight:700}
+
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:1.6s}.btn:active{transform:none}}
+@media (min-width:560px){.hero{padding-bottom:84px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <div class="sign" aria-hidden="true">P</div>
+    <div>
+      <h1>Permohonan Parkir Event</h1>
+      <p>Isi data, transfer, lalu unggah bukti. Konfirmasi dikirim lewat WhatsApp.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <form id="parkirForm" novalidate autocomplete="on">
+
+    <section class="card">
+      <h2><span class="step">1</span>Data pemohon</h2>
+      <div class="field" id="f-nama">
+        <label class="l" for="inputNama">Nama lengkap</label>
+        <input class="in" type="text" id="inputNama" placeholder="Sesuai KTP / identitas" autocomplete="name" autocapitalize="words" maxlength="80">
+        <div class="err"></div>
+      </div>
+      <div class="field" id="f-wa">
+        <label class="l" for="inputWa">Nomor WhatsApp</label>
+        <input class="in" type="tel" id="inputWa" placeholder="0812 3456 7890" autocomplete="tel" inputmode="tel" maxlength="20">
+        <div class="hint">Konfirmasi parkir akan dikirim ke nomor ini.</div>
+        <div class="err"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="step">2</span>Kendaraan &amp; jadwal</h2>
+
+      <div class="field" id="f-jenis">
+        <span class="l">Jenis kendaraan</span>
+        <div class="tiles" role="radiogroup" aria-label="Jenis kendaraan">
+          <label class="tile"><input type="radio" name="jenis" value="Motor" checked>
+            <span class="tile-b">
+              <svg viewBox="0 0 48 32" aria-hidden="true"><circle cx="10" cy="23" r="6"/><circle cx="38" cy="23" r="6"/><path d="M10 23l8-10h10l4 10M18 13l-3-4h-4M28 13l4-5h5"/></svg>
+              <b>Motor</b><small>Rp 5.000 / hari</small>
+            </span></label>
+          <label class="tile"><input type="radio" name="jenis" value="Mobil">
+            <span class="tile-b">
+              <svg viewBox="0 0 48 32" aria-hidden="true"><path d="M4 23v-6l5-9h22l7 9h6v6z"/><circle cx="14" cy="24" r="4" fill="#fff"/><circle cx="36" cy="24" r="4" fill="#fff"/></svg>
+              <b>Mobil</b><small>Rp 15.000 / hari</small>
+            </span></label>
+        </div>
+      </div>
+
+      <div class="field" id="f-nopol">
+        <label class="l" for="inputNopol">Nomor polisi</label>
+        <input class="plate" type="text" id="inputNopol" placeholder="H 1234 ABC" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="11">
+        <div class="err"></div>
+      </div>
+
+      <div class="field" id="f-event">
+        <label class="l" for="eventSelect">Event</label>
+        <select class="in" id="eventSelect"><option value="">Memuat event…</option></select>
+        <div class="hint" id="eventHint" hidden></div>
+        <div class="err"></div>
+      </div>
+
+      <div class="row2">
+        <div class="field" id="f-start">
+          <label class="l" for="startDate">Mulai</label>
+          <input class="in" type="date" id="startDate">
+          <div class="err"></div>
+        </div>
+        <div class="field" id="f-end">
+          <label class="l" for="endDate">Selesai</label>
+          <input class="in" type="date" id="endDate">
+          <div class="err"></div>
+        </div>
+      </div>
+      <div class="chips" role="group" aria-label="Durasi cepat">
+        <button type="button" class="chip" data-days="1">1 hari</button>
+        <button type="button" class="chip" data-days="3">3 hari</button>
+        <button type="button" class="chip" data-days="7">7 hari</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="step">3</span>Pembayaran</h2>
+
+      <div class="ticket" style="margin-bottom:16px">
+        <div class="t-top">
+          <div class="t-row"><span>Durasi</span><b id="durasiText">–</b></div>
+          <div class="t-row"><span>Tarif</span><b id="tarifText">Rp 5.000 / hari</b></div>
+        </div>
+        <div class="t-cut"></div>
+        <div class="t-bot"><span>Total pembayaran</span><strong id="totalText">Rp 0</strong></div>
+      </div>
+
+      <div class="bank">
+        <small>Transfer ke Bank Mandiri</small>
+        <div class="bank-row">
+          <div class="no" id="rekNo">8878720368020000</div>
+          <button type="button" class="copy" id="copyBtn">Salin</button>
+        </div>
+        <small>a/n PT Citra Corpora</small>
+      </div>
+
+      <div class="field" id="f-file">
+        <span class="l">Bukti transfer</span>
+        <input type="file" id="buktiFile" accept="image/*" hidden>
+        <button type="button" class="drop" id="dropBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <b>Unggah bukti transfer</b>
+          <small>Ambil foto atau pilih dari galeri</small>
+        </button>
+        <div class="preview" id="preview" hidden>
+          <img id="prevImg" alt="Pratinjau bukti transfer">
+          <div><b id="prevName"></b><small id="prevSize"></small><button type="button" class="link" id="replaceBtn">Ganti foto</button></div>
+        </div>
+        <div class="err"></div>
+      </div>
+    </section>
+  </form>
+
+  <section class="card done" id="done" hidden aria-live="polite">
+    <div class="ck"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2>Permohonan terkirim</h2>
+    <p>Admin akan memverifikasi pembayaran Anda. Status dikirim lewat WhatsApp.</p>
+    <div class="rid"><small>ID permohonan</small><b id="doneId">-</b></div>
+    <p id="doneSum"></p>
+    <button type="button" class="btn-line" id="againBtn">Buat permohonan baru</button>
+  </section>
+</main>
+
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <div><small>Total pembayaran</small><strong id="barTotal">Rp 0</strong></div>
+    <button type="button" class="btn" id="btnSubmit">Kirim permohonan</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var TARIF = (window.APP_CONFIG && APP_CONFIG.TARIF) || { Motor: 5000, Mobil: 15000 };   // tampilan saja; server menghitung ulang
+  var MAX_DIM = 1280;
+  var events = [], fileB64 = '', fileName = 'bukti', busy = false, toastTimer;
+
+  function todayISO() { return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' }); }
+  function addDays(iso, n) { var d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+  function diffDays(a, b) { return Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 864e5) + 1; }
+  function rp(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+  function jenis() { return document.querySelector('input[name=jenis]:checked').value; }
+
+  function toast(msg, type) {
+    var t = $('toast'); t.textContent = msg; t.className = 'toast ' + (type || ''); t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 3800);
+  }
+  function setErr(id, msg) {
+    var f = $(id); f.classList.toggle('has-err', !!msg);
+    var e = f.querySelector('.err'); if (e) e.textContent = msg || '';
+  }
+
+  /* ---------- Event ---------- */
+  function loadEvents() {
+    var sel = $('eventSelect');
+    Api.call('getActiveEvents', []).then(function (list) {
+      events = list || []; sel.innerHTML = '';
+      if (events.length !== 1) { var o = document.createElement('option'); o.value = ''; o.textContent = 'Pilih event'; sel.appendChild(o); }
+      events.forEach(function (ev) { var o = document.createElement('option'); o.value = ev.name; o.textContent = ev.name; sel.appendChild(o); });
+      applyEvent();
+    }).catch(function (err) {
+      sel.innerHTML = '<option value="">Gagal memuat event</option>';
+      toast((err && err.message) || 'Gagal memuat daftar event. Muat ulang halaman.', 'err');
+    });
+  }
+
+  function currentEvent() { return events.filter(function (e) { return e.name === $('eventSelect').value; })[0]; }
+
+  function applyEvent() {
+    var ev = currentEvent(), min = todayISO(), max = '';
+    if (ev) { if (ev.start && ev.start > min) min = ev.start; max = ev.end || ''; }
+    ['startDate', 'endDate'].forEach(function (id) {
+      $(id).min = min; if (max) $(id).max = max; else $(id).removeAttribute('max');
+    });
+    var h = $('eventHint');
+    if (ev && (ev.start || ev.end)) { h.textContent = 'Periode event: ' + (ev.start || '…') + ' s/d ' + (ev.end || '…'); h.hidden = false; }
+    else h.hidden = true;
+    hitung();
+  }
+
+  /* ---------- Hitung ---------- */
+  function hitung() {
+    var s = $('startDate').value, e = $('endDate').value, t = TARIF[jenis()];
+    $('tarifText').textContent = rp(t) + ' / hari';
+    if (s && e && e >= s) {
+      var h = diffDays(s, e), tot = h * t;
+      $('durasiText').textContent = h + ' hari'; $('totalText').textContent = rp(tot); $('barTotal').textContent = rp(tot);
+      return { h: h, t: tot };
+    }
+    $('durasiText').textContent = '–'; $('totalText').textContent = 'Rp 0'; $('barTotal').textContent = 'Rp 0';
+    return null;
+  }
+
+  /* ---------- Input helper ---------- */
+  function formatPlate(v) {
+    v = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    var m = v.match(/^([A-Z]{1,2})?(\d{1,4})?([A-Z]{1,3})?/);
+    return [m[1], m[2], m[3]].filter(Boolean).join(' ');
+  }
+  $('inputNopol').addEventListener('input', function () {
+    var f = formatPlate(this.value); if (f !== this.value) this.value = f;
+  });
+  function normWa(v) {
+    var d = String(v).replace(/\D/g, '');
+    if (d.indexOf('0') === 0) d = '62' + d.slice(1); else if (d.indexOf('8') === 0) d = '62' + d;
+    return /^62\d{8,13}$/.test(d) ? d : '';
+  }
+
+  ['startDate', 'endDate'].forEach(function (id) { $(id).addEventListener('change', hitung); });
+  $('startDate').addEventListener('change', function () {
+    var s = this.value, e = $('endDate');
+    if (s && e.value && e.value < s) e.value = s;
+    hitung();
+  });
+  $('eventSelect').addEventListener('change', applyEvent);
+  Array.prototype.forEach.call(document.querySelectorAll('input[name=jenis]'), function (r) { r.addEventListener('change', hitung); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (c) {
+    c.addEventListener('click', function () {
+      var n = Number(c.dataset.days), sEl = $('startDate'), eEl = $('endDate');
+      if (!sEl.value) sEl.value = sEl.min || todayISO();
+      var end = addDays(sEl.value, n - 1), max = eEl.max;
+      if (max && end > max) { end = max; toast('Durasi disesuaikan dengan periode event.'); }
+      eEl.value = end; hitung(); setErr('f-start', ''); setErr('f-end', '');
+    });
+  });
+
+  /* ---------- Salin rekening ---------- */
+  $('copyBtn').addEventListener('click', function () {
+    var txt = $('rekNo').textContent.trim();
+    function ok() { toast('Nomor rekening disalin', 'ok'); }
+    function legacy() {
+      var ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0;top:0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy') ? ok() : toast('Salin manual: ' + txt, 'err'); } catch (e) { toast('Salin manual: ' + txt, 'err'); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, legacy); else legacy();
+  });
+
+  /* ---------- Foto bukti ---------- */
+  $('dropBtn').addEventListener('click', function () { $('buktiFile').click(); });
+  $('replaceBtn').addEventListener('click', function () { $('buktiFile').click(); });
+  $('buktiFile').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    if (f.type && f.type.indexOf('image/') !== 0) { setErr('f-file', 'Pilih berkas gambar (JPG, PNG, atau WebP).'); return; }
+    var url = URL.createObjectURL(f), img = new Image();
+    img.onload = function () {
+      var w = img.naturalWidth, h = img.naturalHeight, sc = Math.min(1, MAX_DIM / Math.max(w, h));
+      var c = document.createElement('canvas'); c.width = Math.round(w * sc); c.height = Math.round(h * sc);
+      var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      var q = 0.8, data = c.toDataURL('image/jpeg', q);
+      while (data.length > 1.6e6 && q > 0.45) { q -= 0.1; data = c.toDataURL('image/jpeg', q); }
+      if (data.length > 1.6e6) { setErr('f-file', 'Foto terlalu besar. Coba ambil ulang dengan resolusi lebih kecil.'); return; }
+      fileB64 = data.split(',')[1]; fileName = (f.name || 'bukti').replace(/\.[^/.]+$/, '');
+      $('prevImg').src = data; $('prevName').textContent = f.name || 'Foto bukti';
+      $('prevSize').textContent = Math.round(fileB64.length * 0.75 / 1024) + ' KB';
+      $('preview').hidden = false; $('dropBtn').hidden = true; setErr('f-file', '');
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      setErr('f-file', 'Foto tidak bisa dibaca. Coba ambil ulang atau pilih format JPG/PNG.');
+    };
+    img.src = url;
+  });
+
+  /* ---------- Validasi ---------- */
+  function validate() {
+    var first = '';
+    function bad(id, msg) { setErr(id, msg); if (!first) first = id; }
+    function good(id) { setErr(id, ''); }
+
+    $('inputNama').value.trim().length < 3 ? bad('f-nama', 'Isi nama lengkap sesuai identitas.') : good('f-nama');
+    normWa($('inputWa').value) ? good('f-wa') : bad('f-wa', 'Nomor WhatsApp tidak valid. Contoh: 0812 3456 7890.');
+    /^[A-Z]{1,2} ?\d{1,4} ?[A-Z]{0,3}$/.test($('inputNopol').value.trim()) ? good('f-nopol') : bad('f-nopol', 'Format belum sesuai. Contoh: H 1234 ABC.');
+    $('eventSelect').value ? good('f-event') : bad('f-event', 'Pilih event.');
+
+    var s = $('startDate').value, e = $('endDate').value, min = $('startDate').min, max = $('endDate').max;
+    if (!s) bad('f-start', 'Pilih tanggal mulai.');
+    else if (min && s < min) bad('f-start', 'Tanggal mulai minimal ' + min + '.');
+    else good('f-start');
+    if (!e) bad('f-end', 'Pilih tanggal selesai.');
+    else if (s && e < s) bad('f-end', 'Tanggal selesai sebelum tanggal mulai.');
+    else if (max && e > max) bad('f-end', 'Di luar periode event.');
+    else good('f-end');
+
+    fileB64 ? good('f-file') : bad('f-file', 'Unggah foto bukti transfer.');
+    return first;
+  }
+
+  /* ---------- Kirim ---------- */
+  function setBusy(on) {
+    busy = on; var b = $('btnSubmit'); b.disabled = on;
+    b.innerHTML = on ? '<span class="spin" aria-hidden="true"></span>Mengirim…' : 'Kirim permohonan';
+  }
+
+  $('btnSubmit').addEventListener('click', function () {
+    if (busy) return;
+    var first = validate();
+    if (first) { $(first).scrollIntoView({ behavior: 'smooth', block: 'center' }); toast('Lengkapi data yang ditandai.', 'err'); return; }
+
+    var form = {
+      nama: $('inputNama').value.trim(), noWhatsapp: $('inputWa').value.trim(), jenisKendaraan: jenis(),
+      noPolisi: $('inputNopol').value.trim(), eventName: $('eventSelect').value,
+      startDate: $('startDate').value, endDate: $('endDate').value
+    };
+    setBusy(true);
+    Api.call('submitFormRequest', [form, { fileName: fileName + '.jpg', mimeType: 'image/jpeg', data: fileB64 }])
+      .then(function (res) {
+        setBusy(false);
+        if (res && res.success) showDone(res, form);
+        else toast((res && res.message) || 'Gagal mengirim permohonan.', 'err');
+      })
+      .catch(function (err) {
+        setBusy(false); toast((err && err.message) || 'Koneksi gagal. Periksa internet Anda lalu coba lagi.', 'err');
+      });
+  });
+
+  function showDone(res, form) {
+    $('doneId').textContent = res.requestId;
+    $('doneSum').textContent = form.noPolisi + ' · ' + res.hari + ' hari · ' + rp(res.total);
+    $('parkirForm').hidden = true; $('bar').hidden = true; $('done').hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  $('againBtn').addEventListener('click', function () {
+    $('parkirForm').reset(); fileB64 = ''; $('preview').hidden = true; $('dropBtn').hidden = false;
+    Array.prototype.forEach.call(document.querySelectorAll('.has-err'), function (f) { f.classList.remove('has-err'); });
+    $('done').hidden = true; $('parkirForm').hidden = false; $('bar').hidden = false;
+    applyEvent(); window.scrollTo({ top: 0 });
+  });
+
+  loadEvents(); hitung();
+})();
+</script>
+</body>
+</html>
