@@ -24,3 +24,9 @@ Code.gs        Backend: tempel di Apps Script (BUKAN di GitHub Pages)
 
 Tes backend: buka URL `/exec` di browser, harus muncul `{"ok":true,"service":"parkir-api",...}`.
 Halaman login admin juga menampilkan status koneksi server.
+
+## Dokumen STNK
+- Pemohon mengunggah foto (JPG/PNG/WebP, otomatis dikompres) atau PDF STNK, maks. 2 MB. Operator juga bisa melampirkan STNK saat pendaftaran di lokasi (opsional).
+- File disimpan di folder Drive (`DRIVE_FOLDER_ID`). **Biarkan folder itu privat** (jangan dibagikan ke "Anyone with the link"); STNK memuat data pribadi.
+- Admin dan operator melihat dokumen lewat tombol **STNK**. File dikirim oleh API setelah PIN diverifikasi, dan setiap pembukaan tercatat di Log Aktivitas (`LIHAT_STNK`).
+- Permohonan lama yang berisi bukti transfer tetap bisa dibuka lewat tombol yang sama.

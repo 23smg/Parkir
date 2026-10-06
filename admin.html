@@ -139,10 +139,9 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
 .conn i{flex:none;width:8px;height:8px;border-radius:50%;background:#c4cbd8;margin-top:5px}
 .conn.ok i{background:var(--ok)}.conn.ok{color:var(--ok)}.conn.bad i{background:var(--err)}.conn.bad{color:#9d2a21}
 .shake{animation:sk .35s}@keyframes sk{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
-.credit-l{margin-top:18px;font-size:11.5px;color:#8a94a6}
-.wm{position:fixed;inset:0;z-index:35;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='380' height='240'%3E%3Ctext x='190' y='120' text-anchor='middle' transform='rotate(-24 190 120)' font-family='Arial,sans-serif' font-size='15' font-weight='700' fill='%230e1c36' fill-opacity='.075'%3Edevelop alif.rizal@23semarang.id%3C/text%3E%3C/svg%3E");background-repeat:repeat}
-.credit{padding:10px 10px 2px;font-size:11px;color:#6f819f;word-break:break-all}
-.pgfoot{padding:0 28px 26px;font-size:12px;color:var(--mute)}
+.credit-l{margin-top:18px;font-size:11px;line-height:1.5;color:#9aa3b2}
+.pgfoot a,.credit-l a{color:inherit;text-decoration:none}
+.pgfoot{padding:8px 28px 26px;font-size:11px;line-height:1.5;color:#9aa3b2}
 @media (max-width:900px){.pgfoot{padding:0 16px 26px}}
 @media (max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.gate{grid-template-columns:1fr}.gate-s{border-left:0;border-top:1px solid rgba(255,255,255,.16);padding:18px 0 0}}
 @media (max-width:900px){
@@ -202,7 +201,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
     <div class="login-err" id="loginErr" role="alert" hidden></div>
     <button class="btn yellow" id="btnLogin" type="submit">Masuk</button>
     <div class="conn" id="connStat" role="status"><i></i><span id="connTxt">Memeriksa koneksi ke server…</span></div>
-    <div class="credit-l">develop alif.rizal@23semarang.id</div>
+    <div class="credit-l">Copyright © 2026 23Semarang. All rights reserved.<br>Support/Developer: <a href="mailto:alif.rizal@23semarang.id">alif.rizal@23semarang.id</a></div>
   </form>
 </div>
 
@@ -214,7 +213,6 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
       <div><b id="meName">-</b><small id="meRole">-</small></div>
       <button type="button" data-act="logout" title="Kunci konsol" aria-label="Kunci konsol"><svg class="ic"><use href="#i-out"/></svg></button>
     </div>
-    <div class="credit">develop alif.rizal@23semarang.id</div>
   </aside>
 
   <div class="main">
@@ -308,6 +306,14 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
               <button type="button" class="btn ghost sm" data-act="chipW" data-days="3">3 hari</button>
               <button type="button" class="btn ghost sm" data-act="chipW" data-days="7">7 hari</button>
             </div>
+            <div class="field"><span class="lbl">Foto / file STNK <span class="muted">(opsional)</span></span>
+              <input type="file" id="wFile" accept="image/*,application/pdf" hidden>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <button type="button" class="btn ghost" data-act="wPick">Ambil foto / pilih file</button>
+                <span class="muted" id="wFileName">Belum ada file</span>
+                <button type="button" class="btn danger sm" id="wFileClear" data-act="wClear" hidden>Hapus</button>
+              </div>
+            </div>
             <div class="kv" style="margin-top:0"><div><span>Durasi</span><span id="wDur">–</span></div><div><span>Total tunai</span><span style="font-size:20px" id="wTot">Rp 0</span></div></div>
             <button class="btn yellow" id="btnWalk" data-act="walkSubmit" style="width:100%;min-height:50px;font-size:15px">Terima tunai &amp; aktifkan</button>
           </div>
@@ -373,11 +379,10 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
         </div></div>
       </section>
     </div>
-    <footer class="pgfoot">develop alif.rizal@23semarang.id</footer>
+    <footer class="pgfoot">Copyright © 2026 23Semarang. All rights reserved.<br>Support/Developer: <a href="mailto:alif.rizal@23semarang.id">alif.rizal@23semarang.id</a></footer>
   </div>
 </div>
 
-<div class="wm" id="wm" aria-hidden="true" hidden></div>
 <div class="scrim" id="scrim" hidden data-act="closeAll"></div>
 <aside class="drawer" id="drawer" aria-label="Detail permohonan">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
@@ -401,7 +406,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
     operator: [['check', 'Cek Kendaraan', 'search'], ['walkin', 'Daftar di Lokasi', 'plus'], ['requests', 'Daftar Parkir', 'list'], ['settings', 'Akun', 'user']]
   };
   var AKSI = { STATUS_APPROVED: ['Menyetujui', 'a'], STATUS_REJECTED: ['Menolak', 'r'], STATUS_COMPLETED: ['Konfirmasi WA', 'c'],
-               TAMBAH_EVENT: ['Tambah event', 'n'], EDIT_EVENT: ['Edit event', 'n'], HAPUS_EVENT: ['Hapus event', 'r'], UBAH_PIN: ['Ubah PIN', 'p'], CABUT_AKSES: ['Cabut akses', 'r'], WALKIN: ['Walk-in tunai', 'c'] };
+               TAMBAH_EVENT: ['Tambah event', 'n'], EDIT_EVENT: ['Edit event', 'n'], HAPUS_EVENT: ['Hapus event', 'r'], UBAH_PIN: ['Ubah PIN', 'p'], LIHAT_STNK: ['Lihat STNK', 'n'], CABUT_AKSES: ['Cabut akses', 'r'], WALKIN: ['Walk-in tunai', 'c'] };
 
   /* ---------- Util ---------- */
   function esc(s) { return s == null ? '' : String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
@@ -465,7 +470,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
       done();
       if (!res || !res.authorized) { loginErr((res && res.message) || 'PIN salah.'); $('pinInput').select(); return; }
       S.pin = pin; S.role = res.role; S.user = res.user;
-      $('pinInput').value = ''; $('login').hidden = true; $('app').hidden = false; $('wm').hidden = false;
+      $('pinInput').value = ''; $('login').hidden = true; $('app').hidden = false;
       $('meName').textContent = S.user.replace(/(\D+)(\d)/, '$1 $2').replace(/^./, function (c) { return c.toUpperCase(); });
       $('meRole').textContent = S.role === 'management' ? 'Management' : 'Operator lapangan';
       $('stUser').textContent = $('meName').textContent; $('stRole').textContent = $('meRole').textContent;
@@ -596,10 +601,10 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
       return hit && (!S.st || it.status === S.st) && dateOk(it, S.df);
     });
   }
-  function actionsFor(it, inDrawer) {
+  function actionsFor(it) {
     var id = esc(it.id), h = '';
+    if (it.hasDok) h += '<button class="btn ghost sm" data-act="stnk" data-id="' + id + '">STNK</button>';
     if (S.role === 'management') {
-      if (/^https:/i.test(it.buktiUrl)) h += '<button class="btn ghost sm" data-act="bukti" data-url="' + esc(it.buktiUrl) + '">Bukti</button>';
       if (it.status === 'Pending Verification') h += '<button class="btn ok sm" data-act="approve" data-id="' + id + '">Setujui</button><button class="btn danger sm" data-act="reject" data-id="' + id + '">Tolak</button>';
       else if (isOk(it)) h += '<button class="btn danger sm" data-act="revoke" data-id="' + id + '">Cabut akses</button>';
     } else if (validWa(it)) {
@@ -671,7 +676,9 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
         '<div class="row"><span>Pemohon</span><b>' + esc(it.nama) + '</b></div>' +
         '<div class="row"><span>Event</span><b>' + esc(it.event) + '</b></div>' +
         '<div class="row"><span>Periode</span><b>' + fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + '</b></div>' +
-        '<div class="row"><span>Status</span>' + badge(it.status) + '</div>' + checkinExtra(it, cls) + '</div>';
+        '<div class="row"><span>Status</span>' + badge(it.status) + '</div>' +
+        (it.hasDok ? '<div style="margin-top:10px"><button class="btn ghost sm" data-act="stnk" data-id="' + esc(it.id) + '">Lihat STNK</button></div>' : '') +
+        checkinExtra(it, cls) + '</div>';
     }
     if (valid.length) valid.forEach(function (it) { h += card(it, 'good', 'Berlaku hari ini'); });
     else if (hits.length) hits.forEach(function (it) { h += card(it, 'warn', 'Terdaftar, tetapi tidak berlaku hari ini'); });
@@ -709,6 +716,39 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   ['wStart', 'wEnd', 'wJenis'].forEach(function (id) { $(id).addEventListener('change', wCalc); });
   $('wStart').addEventListener('change', function () { if ($('wEnd').value && $('wEnd').value < this.value) $('wEnd').value = this.value; wCalc(); });
 
+  function fileToDoc(f) {
+    return new Promise(function (resolve, reject) {
+      var isPdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+      if (isPdf) {
+        if (f.size > 2 * 1024 * 1024) { reject(new Error('PDF terlalu besar (maks. 2 MB).')); return; }
+        var fr = new FileReader();
+        fr.onload = function () { resolve({ data: String(fr.result).split(',')[1], mimeType: 'application/pdf', fileName: f.name }); };
+        fr.onerror = function () { reject(new Error('File tidak bisa dibaca.')); };
+        fr.readAsDataURL(f); return;
+      }
+      if (f.type && f.type.indexOf('image/') !== 0) { reject(new Error('Pilih foto (JPG, PNG, WebP) atau PDF.')); return; }
+      var url = URL.createObjectURL(f), img = new Image();
+      img.onload = function () {
+        var sc = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
+        var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        var q = 0.8, d = c.toDataURL('image/jpeg', q);
+        while (d.length > 1.6e6 && q > 0.45) { q -= 0.1; d = c.toDataURL('image/jpeg', q); }
+        if (d.length > 1.6e6) { reject(new Error('Foto terlalu besar. Coba resolusi lebih kecil.')); return; }
+        resolve({ data: d.split(',')[1], mimeType: 'image/jpeg', fileName: f.name });
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Foto tidak bisa dibaca. Coba format JPG/PNG.')); };
+      img.src = url;
+    });
+  }
+  function walkClear() { S.walkDoc = null; $('wFile').value = ''; $('wFileName').textContent = 'Belum ada file'; $('wFileClear').hidden = true; }
+  $('wFile').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    fileToDoc(f).then(function (d) { S.walkDoc = d; $('wFileName').textContent = d.fileName + ' · ' + Math.round(d.data.length * 0.75 / 1024) + ' KB'; $('wFileClear').hidden = false; },
+                      function (e) { walkClear(); toast(e.message, 'err'); });
+  });
+
   function walkSubmit() {
     var f = { nama: $('wNama').value.trim(), noWhatsapp: $('wWa').value.trim(), jenisKendaraan: $('wJenis').value, noPolisi: $('wNopol').value.trim(),
               eventName: $('wEvent').value, startDate: $('wStart').value, endDate: $('wEnd').value };
@@ -721,11 +761,11 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
       showCancelButton: true, confirmButtonText: 'Ya, uang sudah diterima', cancelButtonText: 'Batal', confirmButtonColor: '#12805c' }).then(function (r) {
       if (!r.isConfirmed) return;
       var b = $('btnWalk'); b.disabled = true;
-      run('createManualRequest', [f, S.pin], function (res) {
+      run('createManualRequest', [f, S.pin, S.walkDoc || null], function (res) {
         b.disabled = false;
         if (res && res.success) {
           toast('Tercatat ' + res.requestId + ' · ' + rp(res.total), 'ok');
-          ['wNama', 'wWa', 'wNopol'].forEach(function (id) { $(id).value = ''; });
+          ['wNama', 'wWa', 'wNopol'].forEach(function (id) { $(id).value = ''; }); walkClear();
           $('wStart').value = today(); $('wEnd').value = today(); wCalc(); refreshData(true);
         } else toast((res && res.message) || 'Gagal menyimpan pendaftaran.', 'err');
       }, function (e) { b.disabled = false; toast((e && e.message) || 'Koneksi gagal.', 'err'); });
@@ -895,7 +935,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   function changeStatus(id, status) {
     var it = find(id); if (!it) return;
     if (status === 'Rejected') {
-      Swal.fire({ title: 'Alasan penolakan', input: 'text', inputPlaceholder: 'Contoh: Bukti transfer tidak valid', showCancelButton: true,
+      Swal.fire({ title: 'Alasan penolakan', input: 'text', inputPlaceholder: 'Contoh: STNK tidak terbaca / data tidak sesuai', showCancelButton: true,
         confirmButtonText: 'Tolak permohonan', cancelButtonText: 'Batal', confirmButtonColor: '#c0362c',
         inputValidator: function (v) { if (!v || !v.trim()) return 'Alasan penolakan wajib diisi'; } })
         .then(function (r) { if (r.isConfirmed) { closeAll(); applyStatus(it, 'Rejected', r.value.trim(), true); } });
@@ -910,37 +950,47 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
     closeAll(); applyStatus(it, 'Completed', 'Konfirmasi dikirim via operator WA', false);
   }
 
-  /* ---------- Preview bukti ---------- */
-  var Z = { z: 1, x: 0, y: 0, drag: false, sx: 0, sy: 0 };
+  /* ---------- Dokumen STNK ---------- */
+  var Z = { z: 1, x: 0, y: 0, drag: false, sx: 0, sy: 0 }, docUrl = '';
   function applyZ() { var i = $('bImg'); if (i) i.style.transform = 'translate(' + Z.x + 'px,' + Z.y + 'px) scale(' + Z.z + ')'; }
   function zoom(d) { Z.z = Math.min(4, Math.max(0.5, Z.z + d)); if (Z.z <= 1) { Z.x = 0; Z.y = 0; } applyZ(); }
-  function previewBukti(url) {
-    if (!url || url === '#' || !/^https:\/\//i.test(url)) { toast('Bukti pembayaran tidak ditemukan.', 'err'); return; }
-    var m = url.match(/[?&]id=([^&]+)/) || url.match(/\/d\/([^\/?]+)/), direct = m ? 'https://lh3.googleusercontent.com/d/' + m[1] : url;
+  function b64Blob(b64, mime) {
+    var bin = atob(b64), n = bin.length, a = new Uint8Array(n);
+    for (var i = 0; i < n; i++) a[i] = bin.charCodeAt(i);
+    return new Blob([a], { type: mime });
+  }
+  function previewDoc(id) {
+    var it = find(id); if (!it) return;
     Z = { z: 1, x: 0, y: 0, drag: false, sx: 0, sy: 0 };
     Swal.fire({
-      title: 'Bukti transfer',
-      html: '<div style="position:relative;background:#0e1c36;border-radius:12px;overflow:hidden"><div style="position:absolute;top:10px;right:10px;z-index:2;display:flex;gap:6px">' +
+      title: 'Dokumen STNK',
+      html: '<div class="muted" style="margin-bottom:10px">' + esc(it.nopol) + ' · ' + esc(it.nama) + '</div>' +
+        '<div style="position:relative;background:#0e1c36;border-radius:12px;overflow:hidden"><div id="zCtl" style="position:absolute;top:10px;right:10px;z-index:2;display:none;gap:6px">' +
         '<button type="button" class="btn ghost sm" id="zIn" aria-label="Perbesar">+</button><button type="button" class="btn ghost sm" id="zOut" aria-label="Perkecil">−</button><button type="button" class="btn ghost sm" id="zRes">Reset</button></div>' +
-        '<div id="bView" style="height:55vh;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab;touch-action:none"></div></div>',
-      confirmButtonText: 'Tutup', confirmButtonColor: '#0e1c36', width: 640,
+        '<div id="bView" style="height:58vh;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#fff;text-align:center;padding:12px">Memuat dokumen…</div></div>',
+      confirmButtonText: 'Tutup', confirmButtonColor: '#0e1c36', width: 700,
+      willClose: function () { if (docUrl) { URL.revokeObjectURL(docUrl); docUrl = ''; } },
       didOpen: function () {
-        var v = $('bView'), img = new Image();
-        img.id = 'bImg'; img.alt = 'Bukti transfer'; img.draggable = false;
-        img.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;transition:transform .05s;user-select:none';
-        img.onerror = function () {
-          v.innerHTML = ''; var w = document.createElement('div'); w.style.cssText = 'color:#fff;text-align:center;padding:20px';
-          var p = document.createElement('p'); p.textContent = 'Pratinjau tidak tersedia.'; p.style.marginBottom = '12px';
-          var a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.className = 'btn yellow sm'; a.textContent = 'Buka di tab baru';
-          w.appendChild(p); w.appendChild(a); v.appendChild(w);
-        };
-        img.src = direct; v.appendChild(img);
-        $('zIn').onclick = function () { zoom(0.25); }; $('zOut').onclick = function () { zoom(-0.25); }; $('zRes').onclick = function () { Z.z = 1; Z.x = 0; Z.y = 0; applyZ(); };
-        function pt(e) { return e.touches ? e.touches[0] : e; }
-        v.addEventListener('pointerdown', function (e) { Z.drag = true; Z.sx = e.clientX - Z.x; Z.sy = e.clientY - Z.y; try { v.setPointerCapture(e.pointerId); } catch (x) {} });
-        v.addEventListener('pointermove', function (e) { if (!Z.drag) return; Z.x = e.clientX - Z.sx; Z.y = e.clientY - Z.sy; applyZ(); });
-        v.addEventListener('pointerup', function () { Z.drag = false; });
-        v.addEventListener('wheel', function (e) { e.preventDefault(); zoom(e.deltaY < 0 ? 0.15 : -0.15); }, { passive: false });
+        run('getDocument', [id, S.pin], function (res) {
+          var v = $('bView'); if (!v) return;
+          v.textContent = '';
+          if (!res || !res.success) { v.textContent = (res && res.message) || 'Gagal memuat dokumen.'; return; }
+          var blob = b64Blob(res.data, res.mime); docUrl = URL.createObjectURL(blob);
+          if (/pdf/i.test(res.mime)) {
+            var fr = document.createElement('iframe'); fr.src = docUrl; fr.title = 'STNK'; fr.style.cssText = 'width:100%;height:100%;border:0;background:#fff;border-radius:8px';
+            v.style.padding = '0'; v.appendChild(fr);
+          } else {
+            var img = new Image(); img.id = 'bImg'; img.alt = 'STNK'; img.draggable = false; img.src = docUrl;
+            img.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;user-select:none;transition:transform .05s';
+            v.style.cursor = 'grab'; v.style.touchAction = 'none'; v.appendChild(img); $('zCtl').style.display = 'flex';
+            $('zIn').onclick = function () { zoom(0.25); }; $('zOut').onclick = function () { zoom(-0.25); };
+            $('zRes').onclick = function () { Z.z = 1; Z.x = 0; Z.y = 0; applyZ(); };
+            v.addEventListener('pointerdown', function (e) { Z.drag = true; Z.sx = e.clientX - Z.x; Z.sy = e.clientY - Z.y; try { v.setPointerCapture(e.pointerId); } catch (x) {} });
+            v.addEventListener('pointermove', function (e) { if (!Z.drag) return; Z.x = e.clientX - Z.sx; Z.y = e.clientY - Z.sy; applyZ(); });
+            v.addEventListener('pointerup', function () { Z.drag = false; });
+            v.addEventListener('wheel', function (e) { e.preventDefault(); zoom(e.deltaY < 0 ? 0.15 : -0.15); }, { passive: false });
+          }
+        }, function (e) { var v = $('bView'); if (v) v.textContent = (e && e.message) || 'Gagal terhubung ke server.'; });
       }
     });
   }
@@ -968,7 +1018,7 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
   }
   function detailRow(r) {
     return { 'ID Request': r.id, 'Waktu Pengajuan': r.timestamp, 'Nama': r.nama, 'No WA': String(r.wa || ''), 'Jenis': r.jenis, 'Nopol': r.nopol, 'Event': r.event,
-      'Tgl Mulai': r.tglMulai, 'Tgl Selesai': r.tglSelesai, 'Total Hari': r.totalHari, 'Total Bayar': Number(r.totalBayar || 0), 'Status': r.status, 'Catatan': r.catatan, 'Konfirmasi WA': r.waktuKonfirmasiWa || '-' };
+      'Tgl Mulai': r.tglMulai, 'Tgl Selesai': r.tglSelesai, 'Total Hari': r.totalHari, 'Total Bayar': Number(r.totalBayar || 0), 'Status': r.status, 'STNK': r.hasDok ? 'Ada' : 'Tidak ada', 'Catatan': r.catatan, 'Konfirmasi WA': r.waktuKonfirmasiWa || '-' };
   }
   function exportRekap() {
     var d = repData(); if (!d.length) { toast('Tidak ada data pada periode ini.', 'err'); return; }
@@ -1001,8 +1051,10 @@ select.in{padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmln
       case 'revoke': revoke(id); break;
       case 'checkin': checkin(id); break;
       case 'walkSubmit': walkSubmit(); break;
+      case 'wPick': $('wFile').click(); break;
+      case 'wClear': walkClear(); break;
       case 'chipW': var st = $('wStart').value || today(); $('wStart').value = st; $('wEnd').value = shift(st, Number(el.dataset.days) - 1); wCalc(); break;
-      case 'bukti': previewBukti(el.dataset.url); break;
+      case 'stnk': previewDoc(id); break;
       case 'event-new': eventModal(''); break;
       case 'event-edit': eventModal(id); break;
       case 'event-toggle': toggleEvent(id); break;

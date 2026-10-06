@@ -85,11 +85,6 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
 .t-bot strong{font-size:26px;font-weight:800;letter-spacing:-.01em}
 
 /* Rekening */
-.bank{background:var(--ink);color:#fff;border-radius:14px;padding:16px;margin-bottom:14px}
-.bank small{display:block;font-size:12px;color:#b8c3d9}
-.bank .no{font-size:22px;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums;margin:4px 0}
-.bank-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.copy{min-height:44px;padding:0 16px;border-radius:10px;border:0;background:var(--yellow);color:var(--ink);font-weight:800;font-size:14px}
 
 /* Unggah bukti */
 .drop{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 12px;background:#fafbfd;
@@ -134,6 +129,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
 
 .alert{display:flex;gap:12px;align-items:flex-start;background:#fdecea;border:1px solid #f1c0bb;color:#9d2a21;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:14px;font-weight:600;line-height:1.4}
 .alert span{flex:1}.alert .link{color:#9d2a21;text-decoration:underline;min-height:0;padding:0;white-space:nowrap}
+.legal{padding:6px 4px 10px;text-align:center;font-size:11px;line-height:1.5;color:#9aa3b2}.legal a{color:inherit;text-decoration:none}
 @media (prefers-reduced-motion:reduce){.spin{animation-duration:1.6s}.btn:active{transform:none}}
 @media (min-width:560px){.hero{padding-bottom:84px}}
 </style>
@@ -145,7 +141,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
     <div class="sign" aria-hidden="true">P</div>
     <div>
       <h1>Permohonan Parkir Event</h1>
-      <p>Isi data, transfer, lalu unggah bukti. Konfirmasi dikirim lewat WhatsApp.</p>
+      <p>Isi data, unggah STNK, lalu kirim. Konfirmasi dikirim lewat WhatsApp.</p>
     </div>
   </div>
 </header>
@@ -221,7 +217,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
     </section>
 
     <section class="card">
-      <h2><span class="step">3</span>Pembayaran</h2>
+      <h2><span class="step">3</span>Dokumen &amp; biaya</h2>
 
       <div class="ticket" style="margin-bottom:16px">
         <div class="t-top">
@@ -229,30 +225,22 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
           <div class="t-row"><span>Tarif</span><b id="tarifText">Rp 5.000 / hari</b></div>
         </div>
         <div class="t-cut"></div>
-        <div class="t-bot"><span>Total pembayaran</span><strong id="totalText">Rp 0</strong></div>
-      </div>
-
-      <div class="bank">
-        <small>Transfer ke Bank Mandiri</small>
-        <div class="bank-row">
-          <div class="no" id="rekNo">8878720368020000</div>
-          <button type="button" class="copy" id="copyBtn">Salin</button>
-        </div>
-        <small>a/n PT Citra Corpora</small>
+        <div class="t-bot"><span>Total biaya</span><strong id="totalText">Rp 0</strong></div>
       </div>
 
       <div class="field" id="f-file">
-        <span class="l">Bukti transfer</span>
-        <input type="file" id="buktiFile" accept="image/*" hidden>
+        <span class="l">Foto atau file STNK</span>
+        <input type="file" id="buktiFile" accept="image/*,application/pdf" hidden>
         <button type="button" class="drop" id="dropBtn">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-          <b>Unggah bukti transfer</b>
-          <small>Ambil foto atau pilih dari galeri</small>
+          <b>Unggah foto atau file STNK</b>
+          <small>Ambil foto, pilih dari galeri, atau PDF (maks. 2 MB)</small>
         </button>
         <div class="preview" id="preview" hidden>
-          <img id="prevImg" alt="Pratinjau bukti transfer">
-          <div><b id="prevName"></b><small id="prevSize"></small><button type="button" class="link" id="replaceBtn">Ganti foto</button></div>
+          <img id="prevImg" alt="Pratinjau STNK">
+          <div><b id="prevName"></b><small id="prevSize"></small><button type="button" class="link" id="replaceBtn">Ganti file</button></div>
         </div>
+        <div class="hint">Pastikan nomor polisi dan nama pemilik pada STNK terbaca jelas.</div>
         <div class="err"></div>
       </div>
     </section>
@@ -261,16 +249,17 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
   <section class="card done" id="done" hidden aria-live="polite">
     <div class="ck"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
     <h2>Permohonan terkirim</h2>
-    <p>Admin akan memverifikasi pembayaran Anda. Status dikirim lewat WhatsApp.</p>
+    <p>Admin akan memverifikasi data dan STNK Anda. Status dikirim lewat WhatsApp.</p>
     <div class="rid"><small>ID permohonan</small><b id="doneId">-</b></div>
     <p id="doneSum"></p>
     <button type="button" class="btn-line" id="againBtn">Buat permohonan baru</button>
   </section>
+  <footer class="legal">Copyright © 2026 23Semarang. All rights reserved.<br>Support/Developer: <a href="mailto:alif.rizal@23semarang.id">alif.rizal@23semarang.id</a></footer>
 </main>
 
 <div class="bar" id="bar">
   <div class="bar-in">
-    <div><small>Total pembayaran</small><strong id="barTotal">Rp 0</strong></div>
+    <div><small>Total biaya</small><strong id="barTotal">Rp 0</strong></div>
     <button type="button" class="btn" id="btnSubmit">Kirim permohonan</button>
   </div>
 </div>
@@ -281,7 +270,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
   var $ = function (id) { return document.getElementById(id); };
   var TARIF = (window.APP_CONFIG && APP_CONFIG.TARIF) || { Motor: 5000, Mobil: 15000 };   // tampilan saja; server menghitung ulang
   var MAX_DIM = 1280;
-  var events = [], fileB64 = '', fileName = 'bukti', busy = false, toastTimer;
+  var events = [], fileB64 = '', fileName = 'stnk', fileMime = 'image/jpeg', busy = false, toastTimer;
 
   function todayISO() { return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' }); }
   function addDays(iso, n) { var d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
@@ -383,25 +372,31 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
     });
   });
 
-  /* ---------- Salin rekening ---------- */
-  $('copyBtn').addEventListener('click', function () {
-    var txt = $('rekNo').textContent.trim();
-    function ok() { toast('Nomor rekening disalin', 'ok'); }
-    function legacy() {
-      var ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0;top:0';
-      document.body.appendChild(ta); ta.focus(); ta.select();
-      try { document.execCommand('copy') ? ok() : toast('Salin manual: ' + txt, 'err'); } catch (e) { toast('Salin manual: ' + txt, 'err'); }
-      document.body.removeChild(ta);
-    }
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, legacy); else legacy();
-  });
-
-  /* ---------- Foto bukti ---------- */
+  /* ---------- Foto / file STNK ---------- */
+  var PDF_ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'%3E%3Crect width='72' height='72' rx='10' fill='%23fdecea'/%3E%3Cpath d='M22 12h20l10 10v38H22z' fill='%23fff' stroke='%23c0362c' stroke-width='3'/%3E%3Ctext x='37' y='48' text-anchor='middle' font-family='Arial' font-weight='700' font-size='13' fill='%23c0362c'%3EPDF%3C/text%3E%3C/svg%3E";
   $('dropBtn').addEventListener('click', function () { $('buktiFile').click(); });
   $('replaceBtn').addEventListener('click', function () { $('buktiFile').click(); });
+
+  function setDoc(b64, mime, name, previewSrc, label) {
+    fileB64 = b64; fileMime = mime; fileName = (name || 'stnk').replace(/\.[^/.]+$/, '');
+    $('prevImg').src = previewSrc; $('prevName').textContent = name || 'STNK';
+    $('prevSize').textContent = label + ' · ' + Math.round(b64.length * 0.75 / 1024) + ' KB';
+    $('preview').hidden = false; $('dropBtn').hidden = true; setErr('f-file', '');
+  }
+
   $('buktiFile').addEventListener('change', function () {
     var f = this.files && this.files[0]; if (!f) return;
-    if (f.type && f.type.indexOf('image/') !== 0) { setErr('f-file', 'Pilih berkas gambar (JPG, PNG, atau WebP).'); return; }
+    var isPdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+
+    if (isPdf) {
+      if (f.size > 2 * 1024 * 1024) { setErr('f-file', 'File PDF terlalu besar (maks. 2 MB).'); return; }
+      var fr = new FileReader();
+      fr.onload = function () { setDoc(String(fr.result).split(',')[1], 'application/pdf', f.name, PDF_ICON, 'PDF'); };
+      fr.onerror = function () { setErr('f-file', 'File tidak bisa dibaca. Coba pilih ulang.'); };
+      fr.readAsDataURL(f); return;
+    }
+    if (f.type && f.type.indexOf('image/') !== 0) { setErr('f-file', 'Pilih foto (JPG, PNG, WebP) atau file PDF.'); return; }
+
     var url = URL.createObjectURL(f), img = new Image();
     img.onload = function () {
       var w = img.naturalWidth, h = img.naturalHeight, sc = Math.min(1, MAX_DIM / Math.max(w, h));
@@ -411,10 +406,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
       var q = 0.8, data = c.toDataURL('image/jpeg', q);
       while (data.length > 1.6e6 && q > 0.45) { q -= 0.1; data = c.toDataURL('image/jpeg', q); }
       if (data.length > 1.6e6) { setErr('f-file', 'Foto terlalu besar. Coba ambil ulang dengan resolusi lebih kecil.'); return; }
-      fileB64 = data.split(',')[1]; fileName = (f.name || 'bukti').replace(/\.[^/.]+$/, '');
-      $('prevImg').src = data; $('prevName').textContent = f.name || 'Foto bukti';
-      $('prevSize').textContent = Math.round(fileB64.length * 0.75 / 1024) + ' KB';
-      $('preview').hidden = false; $('dropBtn').hidden = true; setErr('f-file', '');
+      setDoc(data.split(',')[1], 'image/jpeg', f.name, data, 'Foto');
     };
     img.onerror = function () {
       URL.revokeObjectURL(url);
@@ -443,7 +435,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
     else if (max && e > max) bad('f-end', 'Di luar periode event.');
     else good('f-end');
 
-    fileB64 ? good('f-file') : bad('f-file', 'Unggah foto bukti transfer.');
+    fileB64 ? good('f-file') : bad('f-file', 'Unggah foto atau file STNK.');
     return first;
   }
 
@@ -464,7 +456,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
       startDate: $('startDate').value, endDate: $('endDate').value
     };
     hideAlert(); setBusy(true);
-    callApi('submitFormRequest', [form, { fileName: fileName + '.jpg', mimeType: 'image/jpeg', data: fileB64 }])
+    callApi('submitFormRequest', [form, { fileName: fileName + (fileMime === 'application/pdf' ? '.pdf' : '.jpg'), mimeType: fileMime, data: fileB64 }])
       .then(function (res) {
         setBusy(false);
         if (res && res.success) showDone(res, form);
