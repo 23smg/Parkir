@@ -1040,7 +1040,17 @@ body.op .btn.sm{min-height:40px}
   function operatorWA(id) {
     var it = find(id); if (!it) return;
     var wa = String(it.wa || '').replace(/\D/g, ''); if (wa.indexOf('0') === 0) wa = '62' + wa.slice(1);
-    var text = 'Pengajuan member parkir anda sudah disetujui. Tunjukkan pesan WhatsApp ini kepada petugas di kantor parkir untuk proses pembayaran.\nTerima kasih!';
+    var pay = (window.APP_CONFIG && APP_CONFIG.PAYMENT) || { bank: 'Mandiri', va: '8878720368020000' };
+    var text = 'Halo ' + it.nama + ',\n\n' +
+      'Konfirmasi akses parkir berlangganan event *' + it.event + '*:\n' +
+      '* Nama: ' + it.nama + '\n' +
+      '* No. Polisi: ' + it.nopol + '\n' +
+      'Pengajuan member parkir anda sudah disetujui.\n\n' +
+      'Mohon melakukan pembayaran dengan detail sebagai berikut.\n' +
+      '* Nomor VA: *' + pay.va + '*\n' +
+      '* Bank: *' + pay.bank + '*\n' +
+      '* Nominal: *Sesuai total yang diajukan pemohon*\n\n' +
+      'Mohon dapat mengirimkan bukti pembayaran untuk proses lebih lanjut. Terima kasih.';
     window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(text), '_blank');   // sinkron dengan klik agar tidak diblokir browser
     closeAll(); applyStatus(it, 'Completed', 'Konfirmasi dikirim via operator WA', false);
   }
