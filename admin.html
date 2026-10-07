@@ -155,6 +155,13 @@ body.op .btn.sm{min-height:40px}
 .banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#fff8e1;border:1px solid #f0d58f;border-radius:12px;padding:12px 16px;font-weight:600}
 .toast[data-act]{cursor:pointer}
 @media (max-width:760px){.tbl tr.new{border-color:var(--accent);border-width:2px}}
+.bd.x{background:#eceff4;color:#4b5565;box-shadow:inset 0 0 0 1px #c9d0dc}
+.bd.x::before{background:none;content:"\23F1";width:auto;height:auto;font-size:11px}
+.tbl tr.exp{background:repeating-linear-gradient(135deg,#fafbfd,#fafbfd 8px,#f2f4f8 8px,#f2f4f8 16px)}
+.tbl tr.exp td:first-child{box-shadow:inset 4px 0 0 #9aa4b5}
+.tbl tr.exp .nm,.tbl tr.exp .plt{opacity:.72}
+.exp-txt{color:#b3261e;font-weight:700;font-size:12px}
+@media (max-width:760px){.tbl tr.exp{border-style:dashed;border-color:#9aa4b5}}
 @media (max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.gate{grid-template-columns:1fr}.gate-s{border-left:0;border-top:1px solid rgba(255,255,255,.16);padding:18px 0 0}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
@@ -244,7 +251,7 @@ body.op .btn.sm{min-height:40px}
           <div>
             <div class="l">Kendaraan berlaku hari ini</div>
             <div class="num" id="gTotal">0</div>
-            <div class="split"><span class="pill"><b id="gMotor">0</b> motor</span><span class="pill"><b id="gMobil">0</b> mobil</span><span class="pill"><b id="gIn">0</b> sudah masuk</span></div>
+            <div class="split"><span class="pill"><b id="gMotor">0</b> motor</span><span class="pill"><b id="gMobil">0</b> mobil</span><span class="pill"><b id="gIn">0</b> sudah masuk</span><button type="button" class="pill" data-act="goExp" style="border:0;color:inherit;font:inherit;cursor:pointer"><b id="gExp">0</b> kedaluwarsa</button></div>
           </div>
           <div class="gate-s">
             <div class="l">Menunggu verifikasi</div>
@@ -434,6 +441,10 @@ body.op .btn.sm{min-height:40px}
   function isOk(it) { return it.status === 'Approved' || it.status === 'Completed'; }
   function validWa(it) { var d = String(it.wa || '').replace(/\D/g, ''); if (d.indexOf('0') === 0) d = '62' + d.slice(1); return /^62\d{8,13}$/.test(d); }
   function isActive(it, t) { return isOk(it) && it.tglMulai <= t && t <= it.tglSelesai; }
+  // Kedaluwarsa = tanggal selesai sudah lewat (zona Jakarta) dan permohonan tidak ditolak
+  function isExpired(it) { return it.status !== 'Rejected' && /^\d{4}-/.test(it.tglSelesai) && it.tglSelesai < today(); }
+  function daysAgo(it) { return Math.round((Date.parse(today()) - Date.parse(it.tglSelesai)) / 864e5); }
+  function expBadge(it) { return isExpired(it) ? '<span class="bd x">Kedaluwarsa</span>' : ''; }
   function find(id) { return S.reqs.filter(function (r) { return r.id === id; })[0]; }
   function findEv(id) { return S.events.filter(function (e) { return e.id === id; })[0]; }
 
@@ -565,10 +576,10 @@ body.op .btn.sm{min-height:40px}
 
   /* ---------- Navigasi ---------- */
   function buildNav() {
-    var o = stats(), h = '', nW = S.role === 'management' ? o.p : o.a;
+    var o = stats(), h = '', nW = S.role === 'management' ? o.pLive : o.aLive;
     document.title = (nW ? '(' + nW + ') ' : '') + 'Temporary Parking Membership';
     NAV[S.role].forEach(function (n) {
-      var c = n[0] === 'requests' ? (S.role === 'management' ? o.p : o.a) : 0;
+      var c = n[0] === 'requests' ? (S.role === 'management' ? o.pLive : o.aLive) : 0;
       h += '<button type="button" class="nav' + (S.view === n[0] ? ' on' : '') + '" data-act="nav" data-view="' + n[0] + '">' + icon(n[2]) + '<span>' + n[1] + '</span>' + (c ? '<span class="cnt">' + c + '</span>' : '') + '</button>';
     });
     $('nav').innerHTML = h;
@@ -595,8 +606,12 @@ body.op .btn.sm{min-height:40px}
 
   /* ---------- Statistik ---------- */
   function stats() {
-    var t = today(), o = { rev: 0, revN: 0, pot: 0, a: 0, p: 0, r: 0, motor: 0, mobil: 0, aT: 0, aM: 0, aC: 0 };
+    var t = today(), o = { rev: 0, revN: 0, pot: 0, a: 0, p: 0, r: 0, motor: 0, mobil: 0, aT: 0, aM: 0, aC: 0, exp: 0, aLive: 0, pLive: 0 };
     S.reqs.forEach(function (it) {
+      var ex = isExpired(it);
+      if (ex) o.exp++;
+      if (!ex && it.status === 'Approved') o.aLive++;
+      if (!ex && it.status === 'Pending Verification') o.pLive++;
       if (it.status === 'Completed') { o.rev += it.totalBayar; o.revN++; }
       else if (it.status === 'Approved') { o.pot += it.totalBayar; o.a++; }
       else if (it.status === 'Pending Verification') o.p++;
@@ -610,7 +625,7 @@ body.op .btn.sm{min-height:40px}
   /* ---------- Ringkasan ---------- */
   function renderOverview() {
     var o = stats(), days = [], i, cnt = {};
-    $('gTotal').textContent = o.aT; $('gMotor').textContent = o.aM; $('gMobil').textContent = o.aC; $('gPending').textContent = o.p; $('gIn').textContent = Object.keys(S.checkins).length;
+    $('gTotal').textContent = o.aT; $('gMotor').textContent = o.aM; $('gMobil').textContent = o.aC; $('gPending').textContent = o.p; $('gIn').textContent = Object.keys(S.checkins).length; $('gExp').textContent = o.exp;
     $('kRev').textContent = rp(o.rev); $('kRevN').textContent = o.revN + ' permohonan selesai';
     $('kPot').textContent = rp(o.pot); $('kPotN').textContent = o.a + ' permohonan disetujui';
     $('kRej').textContent = o.r; $('kTotal').textContent = S.reqs.length;
@@ -639,8 +654,8 @@ body.op .btn.sm{min-height:40px}
   /* ---------- Permohonan ---------- */
   function tabsDef() {
     return S.role === 'management'
-      ? [['', 'Semua'], ['Pending Verification', 'Perlu verifikasi'], ['Approved', 'Disetujui'], ['Completed', 'Selesai'], ['Rejected', 'Ditolak']]
-      : [['', 'Semua'], ['Approved', 'Perlu dikonfirmasi'], ['Completed', 'Sudah dikonfirmasi']];
+      ? [['', 'Semua'], ['Pending Verification', 'Perlu verifikasi'], ['Approved', 'Disetujui'], ['Completed', 'Selesai'], ['Rejected', 'Ditolak'], ['__exp', 'Kedaluwarsa']]
+      : [['', 'Semua'], ['Approved', 'Perlu dikonfirmasi'], ['Completed', 'Sudah dikonfirmasi'], ['__exp', 'Kedaluwarsa']];
   }
   function dateOk(it, type) {
     if (type === 'all') return true;
@@ -655,7 +670,7 @@ body.op .btn.sm{min-height:40px}
     var q = S.q.toLowerCase();
     return S.reqs.filter(function (it) {
       var hit = !q || (it.nopol + ' ' + it.nama + ' ' + it.id).toLowerCase().indexOf(q) !== -1;
-      return hit && (!S.st || it.status === S.st) && dateOk(it, S.df);
+      return hit && (!S.st || (S.st === '__exp' ? isExpired(it) : it.status === S.st)) && dateOk(it, S.df);
     });
   }
   function actionsFor(it) {
@@ -663,6 +678,8 @@ body.op .btn.sm{min-height:40px}
     if (it.hasDok) h += '<button class="btn ghost sm" data-act="stnk" data-id="' + id + '">STNK</button>';
     if (S.role === 'management') {
       if (it.status === 'Pending Verification') h += '<button class="btn ok sm" data-act="approve" data-id="' + id + '">Setujui</button><button class="btn danger sm" data-act="reject" data-id="' + id + '">Tolak</button>';
+    } else if (isExpired(it)) {
+      h += '<span class="exp-txt">Masa berlaku habis</span>';
     } else if (validWa(it)) {
       h += '<button class="btn ' + (it.status === 'Completed' ? 'ghost' : 'ok') + ' sm" data-act="wa" data-id="' + id + '">' + (it.status === 'Completed' ? 'Kirim ulang WA' : 'Konfirmasi &amp; WA') + '</button>';
     } else { h += '<span class="muted">Tanpa WA</span>'; }
@@ -674,7 +691,7 @@ body.op .btn.sm{min-height:40px}
     $('newBanner').hidden = !nNew;
     $('newBannerTxt').textContent = nNew + (S.role === 'management' ? ' permohonan baru menunggu verifikasi' : ' permintaan baru disetujui dan siap dikonfirmasi');
     var tabs = tabsDef().map(function (t) {
-      var n = t[0] ? S.reqs.filter(function (r) { return r.status === t[0]; }).length : S.reqs.length;
+      var n = t[0] === '__exp' ? S.reqs.filter(function (r) { return isExpired(r); }).length : t[0] ? S.reqs.filter(function (r) { return r.status === t[0]; }).length : S.reqs.length;
       return '<button type="button" class="tab' + (S.st === t[0] ? ' on' : '') + '" role="tab" data-act="tab" data-st="' + esc(t[0]) + '">' + t[1] + '<i>' + n + '</i></button>';
     }).join('');
     $('reqTabs').innerHTML = tabs;
@@ -683,12 +700,13 @@ body.op .btn.sm{min-height:40px}
     if (S.page > pages) S.page = pages; if (S.page < 1) S.page = 1;
     var s = (S.page - 1) * S.per, e = Math.min(s + S.per, total), h = '';
     list.slice(s, e).forEach(function (it) {
-      h += '<tr' + (S.newIds[it.id] ? ' class="new"' : '') + ' data-act="detail" data-id="' + esc(it.id) + '">' +
+      var rc = ((S.newIds[it.id] ? 'new ' : '') + (isExpired(it) ? 'exp' : '')).trim();
+      h += '<tr' + (rc ? ' class="' + rc + '"' : '') + ' data-act="detail" data-id="' + esc(it.id) + '">' +
         '<td data-l="Pemohon"><div><div class="nm">' + esc(it.nama) + (S.newIds[it.id] ? '<span class="pill-new">BARU</span>' : '') + '</div><div class="sub">' + esc(it.id) + '</div></div></td>' +
         '<td data-l="Kendaraan"><div><span class="plt">' + esc(it.nopol) + '</span><div class="sub" style="margin-top:4px">' + esc(it.jenis) + '</div></div></td>' +
-        '<td data-l="Event"><div><div>' + esc(it.event) + '</div><div class="sub">' + fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + '</div></div></td>' +
+        '<td data-l="Event"><div><div>' + esc(it.event) + '</div><div class="sub">' + fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + '</div>' + (isExpired(it) ? '<div class="exp-txt">Habis ' + daysAgo(it) + ' hari lalu</div>' : '') + '</div></td>' +
         '<td data-l="Total"><b>' + rp(it.totalBayar) + '</b></td>' +
-        '<td data-l="Status">' + badge(it.status) + '</td>' +
+        '<td data-l="Status"><div style="display:flex;gap:6px;flex-wrap:wrap">' + badge(it.status) + expBadge(it) + '</div></td>' +
         '<td data-l="Aksi" class="right"><div class="acts">' + actionsFor(it) + '</div></td></tr>';
     });
     $('reqBody').innerHTML = h || '<tr><td colspan="6" class="empty nol"><b>Tidak ada data</b>Ubah filter atau kata kunci pencarian.</td></tr>';
@@ -735,12 +753,12 @@ body.op .btn.sm{min-height:40px}
         '<div class="row"><span>Pemohon</span><b>' + esc(it.nama) + '</b></div>' +
         '<div class="row"><span>Event</span><b>' + esc(it.event) + '</b></div>' +
         '<div class="row"><span>Periode</span><b>' + fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + '</b></div>' +
-        '<div class="row"><span>Status</span>' + badge(it.status) + '</div>' +
+        '<div class="row"><span>Status</span>' + badge(it.status) + expBadge(it) + '</div>' +
         (it.hasDok ? '<div style="margin-top:10px"><button class="btn ghost sm" data-act="stnk" data-id="' + esc(it.id) + '">Lihat STNK</button></div>' : '') +
         checkinExtra(it, cls) + '</div>';
     }
     if (valid.length) valid.forEach(function (it) { h += card(it, 'good', 'Berlaku hari ini'); });
-    else if (hits.length) hits.forEach(function (it) { h += card(it, 'warn', 'Terdaftar, tetapi tidak berlaku hari ini'); });
+    else if (hits.length) hits.forEach(function (it) { var ex = isExpired(it); h += card(it, ex ? 'bad' : 'warn', ex ? 'Masa berlangganan sudah habis (' + daysAgo(it) + ' hari lalu)' : 'Terdaftar, tetapi belum berlaku hari ini'); });
     else h = '<div class="res bad"><h4>Tidak ditemukan</h4><span>Tidak ada permohonan yang disetujui untuk nomor polisi ini. Arahkan pemohon untuk mengajukan lewat formulir.</span></div>';
     box.innerHTML = h;
   }
@@ -1002,8 +1020,8 @@ body.op .btn.sm{min-height:40px}
     var it = find(id); if (!it) return;
     if (S.newIds[id]) { delete S.newIds[id]; if (S.view === 'requests') renderRequests(); }
     $('drId').textContent = it.id; $('drTs').textContent = 'Diajukan ' + (it.timestamp || '-');
-    var rows = [['Status', badge(it.status)], ['Pemohon', esc(it.nama)], ['WhatsApp', esc(it.wa)], ['Nomor polisi', '<span class="plt">' + esc(it.nopol) + '</span>'],
-      ['Jenis', esc(it.jenis)], ['Event', esc(it.event)], ['Periode', fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + ' (' + it.totalHari + ' hari)'],
+    var rows = [['Status', badge(it.status) + ' ' + expBadge(it)], ['Pemohon', esc(it.nama)], ['WhatsApp', esc(it.wa)], ['Nomor polisi', '<span class="plt">' + esc(it.nopol) + '</span>'],
+      ['Jenis', esc(it.jenis)], ['Event', esc(it.event)], ['Periode', fmtD(it.tglMulai) + ' – ' + fmtD(it.tglSelesai) + ' (' + it.totalHari + ' hari)' + (isExpired(it) ? '<br><span class="exp-txt">Kedaluwarsa ' + daysAgo(it) + ' hari lalu</span>' : '')],
       ['Total bayar', '<b>' + rp(it.totalBayar) + '</b>'], ['Catatan', esc(it.catatan && it.catatan !== '-' ? it.catatan : 'Tidak ada')], ['Konfirmasi WA', esc(it.waktuKonfirmasiWa || '-')]];
     $('drKv').innerHTML = rows.map(function (r) { return '<div><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; }).join('');
     $('drActs').innerHTML = actionsFor(it);
@@ -1115,7 +1133,7 @@ body.op .btn.sm{min-height:40px}
   }
   function detailRow(r) {
     return { 'ID Request': r.id, 'Waktu Pengajuan': r.timestamp, 'Nama': r.nama, 'No WA': String(r.wa || ''), 'Jenis': r.jenis, 'Nopol': r.nopol, 'Event': r.event,
-      'Tgl Mulai': r.tglMulai, 'Tgl Selesai': r.tglSelesai, 'Total Hari': r.totalHari, 'Total Bayar': Number(r.totalBayar || 0), 'Status': r.status, 'STNK': r.hasDok ? 'Ada' : 'Tidak ada', 'Catatan': r.catatan, 'Konfirmasi WA': r.waktuKonfirmasiWa || '-' };
+      'Tgl Mulai': r.tglMulai, 'Tgl Selesai': r.tglSelesai, 'Total Hari': r.totalHari, 'Total Bayar': Number(r.totalBayar || 0), 'Status': r.status, 'STNK': r.hasDok ? 'Ada' : 'Tidak ada', 'Kedaluwarsa': isExpired(r) ? 'Ya' : 'Tidak', 'Catatan': r.catatan, 'Konfirmasi WA': r.waktuKonfirmasiWa || '-' };
   }
   function exportRekap() {
     var d = repData(); if (!d.length) { toast('Tidak ada data pada periode ini.', 'err'); return; }
@@ -1148,6 +1166,7 @@ body.op .btn.sm{min-height:40px}
       case 'notif': if ('Notification' in window) Notification.requestPermission().then(updateNotifBtn); break;
       case 'seenAll': S.newIds = {}; renderRequests(); break;
       case 'goNew': go('requests', { st: watchStatus() }); break;
+      case 'goExp': go('requests', { st: '__exp' }); break;
       case 'checkin': checkin(id); break;
       case 'walkSubmit': walkSubmit(); break;
       case 'wPick': $('wFile').click(); break;
