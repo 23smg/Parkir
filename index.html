@@ -191,8 +191,8 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
       </div>
 
       <div class="field" id="f-event">
-        <label class="l" for="eventSelect">Event</label>
-        <select class="in" id="eventSelect"><option value="">Memuat event…</option></select>
+        <label class="l" for="eventSelect">Member</label>
+        <select class="in" id="eventSelect"><option value="">Memuat member…</option></select>
         <div class="hint" id="eventHint" hidden></div>
         <div class="err"></div>
       </div>
@@ -295,19 +295,19 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
   function showAlert(msg, retry) { $('formAlertTxt').textContent = msg; $('alertRetry').hidden = !retry; $('formAlert').hidden = false; }
   function hideAlert() { $('formAlert').hidden = true; }
   function fail(msg) { showAlert(msg); toast(msg, 'err'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  $('alertRetry').addEventListener('click', function () { hideAlert(); $('eventSelect').innerHTML = '<option value="">Memuat event…</option>'; loadEvents(); });
+  $('alertRetry').addEventListener('click', function () { hideAlert(); $('eventSelect').innerHTML = '<option value="">Memuat member…</option>'; loadEvents(); });
 
   /* ---------- Event ---------- */
   function loadEvents() {
     var sel = $('eventSelect');
     callApi('getActiveEvents', []).then(function (list) {
       events = list || []; sel.innerHTML = '';
-      if (events.length !== 1) { var o = document.createElement('option'); o.value = ''; o.textContent = 'Pilih event'; sel.appendChild(o); }
+      if (events.length !== 1) { var o = document.createElement('option'); o.value = ''; o.textContent = 'Pilih member'; sel.appendChild(o); }
       events.forEach(function (ev) { var o = document.createElement('option'); o.value = ev.name; o.textContent = ev.name; sel.appendChild(o); });
       applyEvent();
     }).catch(function (err) {
-      sel.innerHTML = '<option value="">Gagal memuat event</option>';
-      showAlert('Daftar event tidak dapat dimuat. ' + ((err && err.message) || ''), true);
+      sel.innerHTML = '<option value="">Gagal memuat member</option>';
+      showAlert('Daftar member tidak dapat dimuat. ' + ((err && err.message) || ''), true);
     });
   }
 
@@ -320,7 +320,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
       $(id).min = min; if (max) $(id).max = max; else $(id).removeAttribute('max');
     });
     var h = $('eventHint');
-    if (ev && (ev.start || ev.end)) { h.textContent = 'Periode event: ' + (ev.start || '…') + ' s/d ' + (ev.end || '…'); h.hidden = false; }
+    if (ev && (ev.start || ev.end)) { h.textContent = 'Periode member: ' + (ev.start || '…') + ' s/d ' + (ev.end || '…'); h.hidden = false; }
     else h.hidden = true;
     hitung();
   }
@@ -367,7 +367,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
       var n = Number(c.dataset.days), sEl = $('startDate'), eEl = $('endDate');
       if (!sEl.value) sEl.value = sEl.min || todayISO();
       var end = addDays(sEl.value, n - 1), max = eEl.max;
-      if (max && end > max) { end = max; toast('Durasi disesuaikan dengan periode event.'); }
+      if (max && end > max) { end = max; toast('Durasi disesuaikan dengan periode member.'); }
       eEl.value = end; hitung(); setErr('f-start', ''); setErr('f-end', '');
     });
   });
@@ -424,7 +424,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
     $('inputNama').value.trim().length < 3 ? bad('f-nama', 'Isi nama lengkap sesuai identitas.') : good('f-nama');
     normWa($('inputWa').value) ? good('f-wa') : bad('f-wa', 'Nomor WhatsApp tidak valid. Contoh: 0812 3456 7890.');
     /^[A-Z]{1,2} ?\d{1,4} ?[A-Z]{0,3}$/.test($('inputNopol').value.trim()) ? good('f-nopol') : bad('f-nopol', 'Format belum sesuai. Contoh: H 1234 ABC.');
-    $('eventSelect').value ? good('f-event') : bad('f-event', 'Pilih event.');
+    $('eventSelect').value ? good('f-event') : bad('f-event', 'Pilih member.');
 
     var s = $('startDate').value, e = $('endDate').value, min = $('startDate').min, max = $('endDate').max;
     if (!s) bad('f-start', 'Pilih tanggal mulai.');
@@ -432,7 +432,7 @@ input[type=date].in::-webkit-date-and-time-value{text-align:left}
     else good('f-start');
     if (!e) bad('f-end', 'Pilih tanggal selesai.');
     else if (s && e < s) bad('f-end', 'Tanggal selesai sebelum tanggal mulai.');
-    else if (max && e > max) bad('f-end', 'Di luar periode event.');
+    else if (max && e > max) bad('f-end', 'Di luar periode member.');
     else good('f-end');
 
     fileB64 ? good('f-file') : bad('f-file', 'Unggah foto atau file STNK.');
