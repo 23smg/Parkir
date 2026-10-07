@@ -663,7 +663,6 @@ body.op .btn.sm{min-height:40px}
     if (it.hasDok) h += '<button class="btn ghost sm" data-act="stnk" data-id="' + id + '">STNK</button>';
     if (S.role === 'management') {
       if (it.status === 'Pending Verification') h += '<button class="btn ok sm" data-act="approve" data-id="' + id + '">Setujui</button><button class="btn danger sm" data-act="reject" data-id="' + id + '">Tolak</button>';
-      else if (isOk(it)) h += '<button class="btn danger sm" data-act="revoke" data-id="' + id + '">Cabut akses</button>';
     } else if (validWa(it)) {
       h += '<button class="btn ' + (it.status === 'Completed' ? 'ghost' : 'ok') + ' sm" data-act="wa" data-id="' + id + '">' + (it.status === 'Completed' ? 'Kirim ulang WA' : 'Konfirmasi &amp; WA') + '</button>';
     } else { h += '<span class="muted">Tanpa WA</span>'; }
@@ -832,13 +831,6 @@ body.op .btn.sm{min-height:40px}
     });
   }
 
-  function revoke(id) {
-    var it = find(id); if (!it) return;
-    Swal.fire({ title: 'Cabut akses parkir?', text: it.nopol + ' · ' + it.nama + '. Pemohon akan diberi tahu lewat WhatsApp jika notifikasi aktif.', input: 'text', inputPlaceholder: 'Alasan pencabutan',
-      showCancelButton: true, confirmButtonText: 'Cabut akses', cancelButtonText: 'Batal', confirmButtonColor: '#c0362c',
-      inputValidator: function (v) { if (!v || !v.trim()) return 'Alasan wajib diisi'; } })
-      .then(function (r) { if (r.isConfirmed) { closeAll(); applyStatus(it, 'Rejected', r.value.trim(), true, 'Akses parkir dicabut'); } });
-  }
 
   /* ---------- Event ---------- */
   function renderEvents() {
@@ -1049,7 +1041,7 @@ body.op .btn.sm{min-height:40px}
       'Mohon melakukan pembayaran dengan detail sebagai berikut.\n' +
       '* Nomor VA: *' + pay.va + '*\n' +
       '* Bank: *' + pay.bank + '*\n' +
-      '* Nominal: *Sesuai total yang diajukan pemohon*\n\n' +
+      '* Nominal: *' + rp(it.totalBayar) + '*\n\n' +
       'Mohon dapat mengirimkan bukti pembayaran untuk proses lebih lanjut. Terima kasih.';
     window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(text), '_blank');   // sinkron dengan klik agar tidak diblokir browser
     closeAll(); applyStatus(it, 'Completed', 'Konfirmasi dikirim via operator WA', false);
@@ -1156,7 +1148,6 @@ body.op .btn.sm{min-height:40px}
       case 'notif': if ('Notification' in window) Notification.requestPermission().then(updateNotifBtn); break;
       case 'seenAll': S.newIds = {}; renderRequests(); break;
       case 'goNew': go('requests', { st: watchStatus() }); break;
-      case 'revoke': revoke(id); break;
       case 'checkin': checkin(id); break;
       case 'walkSubmit': walkSubmit(); break;
       case 'wPick': $('wFile').click(); break;
